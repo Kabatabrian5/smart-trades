@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>mart Trades - Powered by Deriv</title>
+  <title>Smart Trades - AI Powered Platform</title>
   <style>
-    body { background: #0b0e14; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+    body { background: #f4f6f9; color: #333; font-family: Arial, sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
     
     /* Splash Loading Screen Styles */
     #splashScreen {
@@ -25,6 +25,7 @@
       text-align: center;
       width: 400px;
       box-shadow: 0 0 30px rgba(0, 208, 156, 0.1);
+      color: #fff;
     }
     .loading-bar-container {
       background: #1f2937;
@@ -41,289 +42,306 @@
       transition: width 0.3s ease;
     }
 
-    /* Main App Interface (Hidden until loaded) */
-    #mainApp {
-      display: none;
-    }
+    #mainApp { display: none; flex: 1; display: flex; flex-direction: column; }
 
-    /* Top Navigation Header */
-    header { background: #131722; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #2a2e39; }
-    .brand { font-weight: bold; font-size: 1.1rem; color: #00d09c; display: flex; align-items: center; gap: 8px; }
-    .brand span { font-size: 0.75rem; color: #848e9c; }
-    .nav-tabs { display: flex; gap: 15px; }
-    .nav-tab { background: #1e222d; border: none; color: #848e9c; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .nav-tab.active { background: #ff4458; color: #fff; }
+    /* Header Styles */
+    header { background: #fff; border-bottom: 1px solid #e1e4e8; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .logo-area { display: flex; align-items: center; gap: 15px; }
+    .logo-box { background: #fff; border: 1px solid #e1e4e8; padding: 6px 12px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+    .ai-badge { background: #eef2ff; color: #4f46e5; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .ai-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
 
-    /* Main Workspace Grid */
-    .workspace { display: grid; grid-template-columns: 280px 1fr 320px; height: calc(100vh - 55px); }
+    /* Navigation Menu Bar */
+    .nav-menu { display: flex; gap: 8px; overflow-x: auto; padding: 10px 20px; background: #fff; border-bottom: 1px solid #e1e4e8; align-items: center; }
+    .nav-btn { background: #f1f3f5; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; color: #495057; white-space: nowrap; transition: 0.2s; }
+    .nav-btn.active { background: #3b5bdb; color: #fff; box-shadow: 0 2px 6px rgba(59, 91, 219, 0.3); }
+    .nav-btn:hover { background: #e9ecef; }
 
-    /* Left Sidebar: Positions / Journal */
-    .panel-left { background: #131722; border-right: 1px solid #2a2e39; display: flex; flex-direction: column; }
-    .panel-header { display: flex; border-bottom: 1px solid #2a2e39; }
-    .panel-header button { flex: 1; background: none; border: none; color: #848e9c; padding: 12px; cursor: pointer; font-size: 12px; font-weight: bold; border-bottom: 2px solid transparent; }
-    .panel-header button.active { color: #fff; border-bottom-color: #ff4458; }
-    .empty-positions { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #848e9c; font-size: 13px; text-align: center; padding: 20px; }
+    /* Views Container */
+    .view-section { display: none; padding: 30px; flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+    .view-section.active { display: block; }
 
-    /* Center Trading Arena */
-    .panel-center { background: #0b0e14; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
-    .market-selector { background: #131722; border: 1px solid #2a2e39; padding: 8px 15px; border-radius: 6px; font-weight: bold; margin-bottom: 30px; cursor: pointer; }
+    /* Dashboard Layout Matching Target Image */
+    .dashboard-container { text-align: center; padding-top: 10px; }
+    .import-options { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
+    .import-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 12px; width: 110px; padding: 20px 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .import-card:hover { border-color: #3b5bdb; transform: translateY(-2px); }
+    .import-icon { width: 40px; height: 40px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
     
-    /* Digit Grid UI (0-9 Circles) */
-    .digits-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; max-width: 450px; width: 100%; margin-top: 40px; }
-    .digit-card { background: #131722; border: 2px solid #2a2e39; border-radius: 50%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; position: relative; }
-    .digit-card:hover { border-color: #848e9c; }
-    .digit-card.selected { border-color: #00d09c; background: #002b20; }
-    .digit-num { font-size: 22px; font-weight: bold; }
-    .digit-percent { font-size: 11px; color: #848e9c; }
+    .bots-section { margin-top: 40px; text-align: left; background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 20px; }
+    .bots-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 14px; }
+    .bots-table th { color: #6b7280; font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid #e1e4e8; }
+    .bots-table td { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
 
-    /* Right Sidebar: Controls */
-    .panel-right { background: #131722; border-left: 1px solid #2a2e39; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
-    .control-group { margin-bottom: 15px; }
-    .control-group label { font-size: 12px; color: #848e9c; display: block; margin-bottom: 5px; }
-    .control-row { display: flex; gap: 10px; }
-    .control-row button { background: #1e222d; border: 1px solid #2a2e39; color: #fff; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .control-row input { background: #0b0e14; border: 1px solid #2a2e39; color: #fff; text-align: center; font-weight: bold; flex: 1; border-radius: 4px; }
-    
-    /* Action Buttons (Matches / Differs) */
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-    .btn-match { background: #00d09c; color: #000; border: none; padding: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; }
-    .btn-differ { background: #ff4458; color: #fff; border: none; padding: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; }
-    .btn-signin-trade { background: #ff4458; color: #fff; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+    /* Manual Trading Layout Styles */
+    .trading-workspace { display: grid; grid-template-columns: 280px 1fr 320px; gap: 20px; background: #131722; color: #fff; border-radius: 8px; padding: 20px; }
+    .panel-left, .panel-right { background: #1e222d; padding: 15px; border-radius: 6px; }
+    .panel-center { background: #0b0e14; padding: 20px; border-radius: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+    .digits-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 30px; max-width: 400px; width: 100%; }
+    .digit-box { background: #131722; border: 2px solid #2a2e39; border-radius: 50%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+    .digit-box.selected { border-color: #00d09c; background: #00382b; }
+    .control-input { width: 100%; background: #0b0e14; border: 1px solid #2a2e39; color: #fff; padding: 8px; border-radius: 4px; margin-bottom: 12px; box-sizing: border-box; }
+    .btn-action-match { background: #00d09c; color: #000; border: none; padding: 12px; font-weight: bold; width: 100%; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    .btn-action-differ { background: #ff4458; color: #fff; border: none; padding: 12px; font-weight: bold; width: 100%; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+
+    /* Footer & Widgets */
+    footer { background: #fff; border-top: 1px solid #e1e4e8; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6b7280; }
+    .risk-badge { background: #f97316; color: #fff; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; }
+    .ai-floating-widget { position: fixed; bottom: 20px; right: 20px; background: #fff; border: 1px solid #e1e4e8; border-radius: 30px; padding: 6px 14px 6px 6px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; }
   </style>
 </head>
 <body>
 
-  <!-- Splash Loading Screen -->
+  <!-- Splash Screen -->
   <div id="splashScreen">
     <div class="splash-card">
-      <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">Smart Trades</div>
+      <div style="font-size: 20px; font-weight: bold; margin-bottom: 5px;">Smart Trades</div>
       <div style="font-size: 12px; color: #00d09c; margin-bottom: 20px;">AI powered bots</div>
       <div class="loading-bar-container">
         <div class="loading-bar-fill" id="loadingBar"></div>
       </div>
-      <div id="loadingText" style="font-size: 11px; color: #848e9c; margin-top: 8px;">Initializing secure connection...</div>
+      <div id="loadingText" style="font-size: 11px; color: #848e9c; margin-top: 8px;">Initializing system...</div>
     </div>
   </div>
 
-  <!-- Main Trading Application (Initially Hidden) -->
+  <!-- Main App Content -->
   <div id="mainApp">
-    <!-- Top Navigation Header -->
     <header>
-      <div class="brand">
-        Smart Trades <span>Pro</span> 
-        <small style="font-size: 10px; color: #848e9c; margin-left: 5px;">powered by Deriv</small>
-      </div>
-      <div class="nav-tabs">
-        <button class="nav-tab active">Manual trading</button>
-        <button class="nav-tab" style="background:none; color:#848e9c;">Bots</button>
-        <button class="nav-tab" style="background:none; color:#848e9c;">Bulk</button>
-        <button class="nav-tab" style="background:none; color:#848e9c;">AI</button>
+      <div class="logo-area">
+        <div class="logo-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2.5"><path d="M3 13h4l3 8 4-16 3 8h4"/></svg>
+          Smart Trades
+        </div>
+        <div class="ai-badge"><div class="ai-dot"></div> AI ENGINE</div>
       </div>
       <div>
-        <button class="nav-tab" style="background:#1e222d; color:#fff;">Cashier</button>
-        <button class="nav-tab" style="background:#ff4458; color:#fff; margin-left: 10px;">Sign up</button>
+        <button style="background: #f1f3f5; border:none; padding: 8px 18px; border-radius: 6px; cursor:pointer; font-weight:600; color: #3b5bdb;">Log in</button>
+        <button style="background: #3b5bdb; color:#fff; border:none; padding: 8px 18px; border-radius: 6px; cursor:pointer; font-weight:600; margin-left: 8px;">Sign up</button>
       </div>
     </header>
 
-    <!-- Workspace Structure -->
-    <div class="workspace">
-      
-      <!-- Left Positions Panel -->
-      <div class="panel-left">
-        <div class="panel-header">
-          <button class="active">Summary</button>
-          <button>Transactions</button>
-          <button>Journal</button>
-        </div>
-        <div class="empty-positions">
-          <div style="font-size: 24px; margin-bottom: 10px;">💼</div>
-          No positions yet
-        </div>
-        <div style="padding: 15px; border-top: 1px solid #2a2e39; font-size: 12px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #848e9c;">
-            <span>Total stake</span><span>Total payout</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
-            <span>0.00 USD</span><span>0.00 USD</span>
-          </div>
-          <button style="width: 100%; background: #1e222d; border: 1px solid #2a2e39; color: #fff; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
-        </div>
-      </div>
-
-      <!-- Center Trading Arena -->
-      <div class="panel-center">
-        <div class="market-selector">Volatility 100 ▾</div>
-        <div id="liveTickDisplay" style="font-size: 28px; font-weight: bold; color: #00d09c; letter-spacing: 1px;">—</div>
-        
-        <!-- Digits 0 to 9 Rendered dynamically -->
-        <div class="digits-container" id="digitGridUI"></div>
-      </div>
-
-      <!-- Right Controls Panel -->
-      <div class="panel-right">
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 15px; color: #848e9c;">
-            <span>Matches/Differs</span>
-            <span id="accountBalance">0.00 USD</span>
-          </div>
-
-          <div class="control-group">
-            <label>Ticks</label>
-            <div class="control-row">
-              <button onclick="adjustValue('ticks', -1)">-</button>
-              <input type="text" id="ticksInput" value="1">
-              <button onclick="adjustValue('ticks', 1)">+</button>
-            </div>
-          </div>
-
-          <div class="control-group">
-            <label>Stake</label>
-            <div class="control-row">
-              <button onclick="adjustValue('stake', -1)">-</button>
-              <input type="text" id="stakeInput" value="10">
-              <button onclick="adjustValue('stake', 1)">+</button>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="action-grid">
-            <button class="btn-match" onclick="placeTrade('DIGITMATCH')">Matches<br><span style="font-size:10px;">866.7%</span></button>
-            <button class="btn-differ" onclick="placeTrade('DIGITDIFF')">Differs<br><span style="font-size:10px;">5.3%</span></button>
-          </div>
-          <button class="btn-signin-trade" onclick="connectDerivAccount()">→ Sign in & Trade</button>
-        </div>
-      </div>
-
+    <!-- Navigation Menu Bar -->
+    <div class="nav-menu">
+      <button class="nav-btn active" onclick="switchView('dashboardView', this)">Dashboard</button>
+      <button class="nav-btn" onclick="switchView('botBuilderView', this)">Bot Builder</button>
+      <button class="nav-btn" onclick="switchView('botsView', this)">Bots</button>
+      <button class="nav-btn" onclick="switchView('proBotView', this)">proBot 2026</button>
+      <button class="nav-btn" onclick="switchView('analysisView', this)">Analysis</button>
+      <button class="nav-btn" onclick="switchView('dcirclesView', this)">Dcircles</button>
+      <!-- Manual Trading Tab right between Dcircles and Signal -->
+      <button class="nav-btn" onclick="switchView('manualTradingView', this)">Manual Trading</button>
+      <button class="nav-btn" onclick="switchView('signalView', this)">Signal</button>
+      <button class="nav-btn" onclick="switchView('chartsView', this)">Charts</button>
+      <button class="nav-btn" onclick="switchView('multimarketView', this)">Multimarket</button>
+      <button class="nav-btn" onclick="switchView('marketsView', this)">Markets</button>
+      <button class="nav-btn" onclick="switchView('tradeviewView', this)">TradeView</button>
     </div>
+
+    <!-- 1. Dashboard View (Matching Target Image Layout) -->
+    <div id="dashboardView" class="view-section active">
+      <div class="dashboard-container">
+        <div style="font-size: 15px; color: #4b5563; font-weight: 500;">
+          Import a bot from your computer or Google Drive, build it from scratch, or start with a quick strategy.
+        </div>
+        
+        <div class="import-options">
+          <div class="import-card">
+            <div class="import-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #374151;">My computer</div>
+          </div>
+          <div class="import-card">
+            <div class="import-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M8.5 2H15.5L22 13.5H15L8.5 2Z" fill="#FBBF24"/><path d="M2 13.5H9L15.5 24H8.5L2 13.5Z" fill="#3B82F6"/><path d="M7.5 13.5H16.5L22 24H13L7.5 13.5Z" fill="#10B981"/></svg>
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #374151;">Google Drive</div>
+          </div>
+          <div class="import-card">
+            <div class="import-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2"><path d="M19 11H15V7H19V11ZM11 11H7V7H11V11ZM19 19H15V15H19V19ZM11 19H7V15H11V19Z"/></svg>
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #374151;">Bot Builder</div>
+          </div>
+          <div class="import-card">
+            <div class="import-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <div style="font-size: 13px; font-weight: 600; color: #374151;">Quick strategy</div>
+          </div>
+        </div>
+
+        <div class="bots-section">
+          <div style="font-weight: bold; color: #1f2937;">Your bots:</div>
+          <table class="bots-table">
+            <thead>
+              <tr>
+                <th>Bot name</th>
+                <th>Last modified</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color: #3b5bdb; font-weight: 500;">Untitled Bot</td>
+                <td style="color: #6b7280;">15 Aug2026</td>
+                <td><span style="color: #6b7280;">📝 Unsaved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other Views Placeholders -->
+    <div id="botBuilderView" class="view-section"><h3>Bot Builder Interface</h3></div>
+    <div id="botsView" class="view-section"><h3>Your Active Bots</h3></div>
+    <div id="proBotView" class="view-section"><h3>proBot 2026 Engine</h3></div>
+    <div id="analysisView" class="view-section"><h3>Market Analysis</h3></div>
+    <div id="dcirclesView" class="view-section"><h3>Dcircles Module</h3></div>
+
+    <!-- 2. Manual Trading View (Placed right between Dcircles and Signal) -->
+    <div id="manualTradingView" class="view-section">
+      <div class="trading-workspace">
+        <div class="panel-left">
+          <h4>Positions</h4>
+          <div style="color: #848e9c; font-size: 13px; text-align: center; padding: 40px 0;">No positions yet</div>
+        </div>
+        <div class="panel-center">
+          <div style="font-weight: bold; margin-bottom: 10px;">Volatility 100 Index</div>
+          <div id="liveTickDisplay" style="font-size: 26px; color: #00d09c; font-weight: bold;">—</div>
+          <div class="digits-grid" id="digitsContainer"></div>
+        </div>
+        <div class="panel-right">
+          <h4>Trade Controls</h4>
+          <label style="font-size: 12px; color: #848e9c;">Stake (USD)</label>
+          <input type="number" id="stakeInput" value="10" class="control-input">
+          <label style="font-size: 12px; color: #848e9c;">Ticks Duration</label>
+          <input type="number" id="ticksInput" value="1" class="control-input">
+          <button class="btn-action-match" onclick="executeManualTrade('DIGITMATCH')">Matches (866.7%)</button>
+          <button class="btn-action-differ" onclick="executeManualTrade('DIGITDIFF')">Differs (5.3%)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subsequent Views -->
+    <div id="signalView" class="view-section"><h3>Live Trading Signals</h3></div>
+    <div id="chartsView" class="view-section"><h3>Advanced Charts</h3></div>
+    <div id="multimarketView" class="view-section"><h3>Multimarket Overview</h3></div>
+    <div id="marketsView" class="view-section"><h3>Synthetic Markets</h3></div>
+    <div id="tradeviewView" class="view-section"><h3>TradeView Integrations</h3></div>
+
+    <!-- Footer matching image layout -->
+    <footer>
+      <div>
+        <span class="risk-badge">⚠️ Risk Disclaimer</span>
+      </div>
+      <div>Developed by Matt</div>
+      <div id="footerTimestamp">2026-08-17 17:02:57 GMT</div>
+    </footer>
+  </div>
+
+  <!-- AI Floating Badge Widget -->
+  <div class="ai-floating-widget">
+    <div style="width: 28px; height: 28px; background: #3b5bdb; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: bold;">AI</div>
+    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
   </div>
 
   <script>
-    // 1. Splash Screen Loading Progress Simulation
+    // Splash Loading animation
     let progress = 0;
     const bar = document.getElementById('loadingBar');
     const txt = document.getElementById('loadingText');
-
-    const loadingInterval = setInterval(() => {
-      progress += Math.floor(Math.random() * 15) + 5;
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 20) + 10;
       if (progress >= 100) {
         progress = 100;
-        clearInterval(loadingInterval);
-        txt.innerText = "Ready!";
+        clearInterval(interval);
         setTimeout(() => {
           document.getElementById('splashScreen').style.opacity = '0';
           setTimeout(() => {
             document.getElementById('splashScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-          }, 500);
-        }, 300);
+            document.getElementById('mainApp').style.display = 'flex';
+          }, 400);
+        }, 200);
       }
       bar.style.width = progress + '%';
-      if (progress > 40) txt.innerText = "Connecting to Deriv WebSocket API...";
-      if (progress > 80) txt.innerText = "Optimizing execution logic...";
-    }, 150);
+    }, 120);
 
-    // 2. Render Digit Selection Circles (0-9)
+    // Tab Switching Logic
+    function switchView(viewId, btnElement) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+      btnElement.classList.add('active');
+    }
+
+    // Manual Trading Digits Generator (0-9)
     let selectedDigit = 5;
-    let activeSymbol = "R_100";
-    const gridUI = document.getElementById('digitGridUI');
-    
+    const grid = document.getElementById('digitsContainer');
     for (let i = 0; i <= 9; i++) {
-      const card = document.createElement('div');
-      card.className = `digit-card ${i === selectedDigit ? 'selected' : ''}`;
-      card.id = `digit-${i}`;
-      card.innerHTML = `
-        <div class="digit-num">${i}</div>
-        <div class="digit-percent">0%</div>
-      `;
-      card.onclick = () => {
-        document.querySelectorAll('.digit-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
+      const box = document.createElement('div');
+      box.className = `digit-box ${i === selectedDigit ? 'selected' : ''}`;
+      box.id = `manual-digit-${i}`;
+      box.innerHTML = `<span style="font-size:18px; font-weight:bold;">${i}</span><span style="font-size:10px; color:#848e9c;">0%</span>`;
+      box.onclick = () => {
+        document.querySelectorAll('.digit-box').forEach(b => b.classList.remove('selected'));
+        box.classList.add('selected');
         selectedDigit = i;
       };
-      gridUI.appendChild(card);
+      grid.appendChild(box);
     }
 
-    // 3. Control adjustment helpers (- / + buttons)
-    function adjustValue(type, amount) {
-      if (type === 'ticks') {
-        let input = document.getElementById('ticksInput');
-        let val = parseInt(input.value) + amount;
-        if (val >= 1 && val <= 10) input.value = val;
-      } else if (type === 'stake') {
-        let input = document.getElementById('stakeInput');
-        let val = parseFloat(input.value) + amount;
-        if (val >= 0.35) input.value = val.toFixed(2);
-      }
-    }
-
-    // 4. Live Deriv WebSocket Connection
+    // Connect to Deriv WebSocket API for Manual Trading Ticks
     const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ ticks: activeSymbol, subscribe: 1 }));
-    };
-
+    ws.onopen = () => { ws.send(JSON.stringify({ ticks: "R_100", subscribe: 1 })); };
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.msg_type === 'tick') {
-        const price = data.tick.quote;
-        const pipSize = data.tick.pip_size || 2;
-        document.getElementById('liveTickDisplay').innerText = price.toFixed(pipSize);
+        const quote = data.tick.quote;
+        const pip = data.tick.pip_size || 2;
+        const formatted = quote.toFixed(pip);
+        document.getElementById('liveTickDisplay').innerText = formatted;
         
-        const priceString = price.toFixed(pipSize);
-        const lastDigit = priceString.charAt(priceString.length - 1);
-        
+        const lastChar = formatted.charAt(formatted.length - 1);
         for(let i=0; i<=9; i++) {
-          let el = document.getElementById(`digit-${i}`);
-          if(i.toString() === lastDigit) {
-            el.style.boxShadow = "0 0 12px #00d09c";
-          } else {
-            el.style.boxShadow = "none";
+          let item = document.getElementById(`manual-digit-${i}`);
+          if(item) {
+            item.style.boxShadow = (i.toString() === lastChar) ? "0 0 10px #00d09c" : "none";
           }
         }
       }
     };
 
-    // 5. Trade Execution via Deriv API
-    function placeTrade(contractType) {
-      const token = prompt("Enter your Deriv API Token to authorize trade execution:");
+    function executeManualTrade(type) {
+      const token = prompt("Enter your Deriv API Token to place trade:");
       if (!token) return;
-
       const stake = document.getElementById('stakeInput').value;
       const duration = document.getElementById('ticksInput').value;
 
       ws.send(JSON.stringify({ authorize: token }));
-
-      ws.onmessage = (event) => {
-        const response = JSON.parse(event.data);
-        if (response.msg_type === 'authorize') {
-          document.getElementById('accountBalance').innerText = `${response.authorize.balance} ${response.authorize.currency}`;
-          
+      ws.onmessage = (e) => {
+        const res = JSON.parse(e.data);
+        if (res.msg_type === 'authorize') {
           ws.send(JSON.stringify({
             buy: 1,
             price: parseFloat(stake),
             parameters: {
               amount: parseFloat(stake),
               basis: "stake",
-              contract_type: contractType,
+              contract_type: type,
               currency: "USD",
               duration: parseInt(duration),
               duration_unit: "t",
-              symbol: activeSymbol,
+              symbol: "R_100",
               barrier: selectedDigit.toString()
             }
           }));
         }
-
-        if (response.msg_type === 'buy') {
-          alert(`Contract successfully purchased! ID: ${response.buy.contract_id}`);
+        if (res.msg_type === 'buy') {
+          alert(`Trade executed successfully! Contract ID: ${res.buy.contract_id}`);
         }
       };
-    }
-
-    function connectDerivAccount() {
-      placeTrade('DIGITMATCH');
     }
   </script>
 </body>
