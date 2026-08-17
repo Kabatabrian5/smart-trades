@@ -62,24 +62,30 @@
     .view-section { display: none; padding: 30px; flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; box-sizing: border-box; }
     .view-section.active { display: block; }
 
-    /* Dashboard Layout Matching Target Image */
+    /* Dashboard Layout Matching Target Image & Deriv Bot Layout */
     .dashboard-container { text-align: center; padding-top: 10px; }
     .import-options { display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
-    .import-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 12px; width: 110px; padding: 20px 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .import-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 12px; width: 120px; padding: 20px 10px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; }
     .import-card:hover { border-color: #3b5bdb; transform: translateY(-2px); }
     .import-icon { width: 40px; height: 40px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
     
-    .bots-section { margin-top: 40px; text-align: left; background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 20px; }
+    .bots-section { margin-top: 40px; text-align: left; background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
     .bots-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; font-size: 14px; }
     .bots-table th { color: #6b7280; font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid #e1e4e8; }
-    .bots-table td { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+    .bots-table td { padding: 14px 0; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    
+    /* Action Icons inside Table */
+    .table-actions { display: flex; gap: 14px; align-items: center; }
+    .action-icon-btn { background: none; border: none; cursor: pointer; color: #4b5563; padding: 4px; display: flex; align-items: center; transition: color 0.2s; }
+    .action-icon-btn:hover { color: #3b5bdb; }
+    .action-icon-btn.delete:hover { color: #ff4458; }
 
     /* Manual Trading Layout Styles */
     .trading-workspace { display: grid; grid-template-columns: 280px 1fr 320px; gap: 20px; background: #131722; color: #fff; border-radius: 8px; padding: 20px; }
     .panel-left, .panel-right { background: #1e222d; padding: 15px; border-radius: 6px; }
     .panel-center { background: #0b0e14; padding: 20px; border-radius: 6px; text-align: center; display: flex; flex-direction: column; align-items: center; }
     .digits-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 30px; max-width: 400px; width: 100%; }
-    .digit-box { background: #131722; border: 2px solid #2a2e39; border-radius: 50%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+    .digit-box { background: #131722; border: 2px solid #2a2e39; border-radius: 50%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; }
     .digit-box.selected { border-color: #00d09c; background: #00382b; }
     .control-input { width: 100%; background: #0b0e14; border: 1px solid #2a2e39; color: #fff; padding: 8px; border-radius: 4px; margin-bottom: 12px; box-sizing: border-box; }
     .btn-action-match { background: #00d09c; color: #000; border: none; padding: 12px; font-weight: bold; width: 100%; border-radius: 4px; cursor: pointer; margin-top: 10px; }
@@ -137,7 +143,7 @@
       <button class="nav-btn" onclick="switchView('tradeviewView', this)">TradeView</button>
     </div>
 
-    <!-- 1. Dashboard View -->
+    <!-- 1. Dashboard View (Fully Matched to Target Image Design) -->
     <div id="dashboardView" class="view-section active">
       <div class="dashboard-container">
         <div style="font-size: 15px; color: #4b5563; font-weight: 500;">
@@ -145,27 +151,27 @@
         </div>
         
         <div class="import-options">
-          <div class="import-card">
+          <div class="import-card" onclick="triggerImport('computer')">
             <div class="import-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
             </div>
             <div style="font-size: 13px; font-weight: 600; color: #374151;">My computer</div>
           </div>
-          <div class="import-card">
+          <div class="import-card" onclick="triggerImport('gdrive')">
             <div class="import-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M8.5 2H15.5L22 13.5H15L8.5 2Z" fill="#FBBF24"/><path d="M2 13.5H9L15.5 24H8.5L2 13.5Z" fill="#3B82F6"/><path d="M7.5 13.5H16.5L22 24H13L7.5 13.5Z" fill="#10B981"/></svg>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M8.5 2H15.5L22 13.5H15L8.5 2Z" fill="#FBBF24"/><path d="M2 13.5H9L15.5 24H8.5L2 13.5Z" fill="#3B82F6"/><path d="M7.5 13.5H16.5L22 24H13L7.5 13.5Z" fill="#10B981"/></svg>
             </div>
             <div style="font-size: 13px; font-weight: 600; color: #374151;">Google Drive</div>
           </div>
-          <div class="import-card">
+          <div class="import-card" onclick="switchView('botBuilderView', document.querySelector('.nav-menu button:nth-child(2)'))">
             <div class="import-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2"><path d="M19 11H15V7H19V11ZM11 11H7V7H11V11ZM19 19H15V15H19V19ZM11 19H7V15H11V19Z"/></svg>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="2"><path d="M19 11H15V7H19V11ZM11 11H7V7H11V11ZM19 19H15V15H19V19ZM11 19H7V15H11V19Z"/></svg>
             </div>
             <div style="font-size: 13px; font-weight: 600; color: #374151;">Bot Builder</div>
           </div>
-          <div class="import-card">
+          <div class="import-card" onclick="alert('Quick strategy builder template activated!')">
             <div class="import-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
             </div>
             <div style="font-size: 13px; font-weight: 600; color: #374151;">Quick strategy</div>
           </div>
@@ -176,16 +182,34 @@
           <table class="bots-table">
             <thead>
               <tr>
-                <th>Bot name</th>
-                <th>Last modified</th>
-                <th>Status</th>
+                <th style="width: 45%;">Bot name</th>
+                <th style="width: 25%;">Last modified</th>
+                <th style="width: 30%;">Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td style="color: #3b5bdb; font-weight: 500;">Untitled Bot</td>
-                <td style="color: #6b7280;">15 Aug2026</td>
-                <td><span style="color: #6b7280;">📝 Unsaved</span></td>
+                <td style="color: #6b7280;">15 Aug 2026</td>
+                <td>
+                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <span style="color: #6b7280; display: flex; align-items: center; gap: 6px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                      Unsaved
+                    </span>
+                    <div class="table-actions">
+                      <button class="action-icon-btn" title="Duplicate Bot" onclick="alert('Duplicating bot...')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      </button>
+                      <button class="action-icon-btn" title="Save Bot" onclick="alert('Bot saved successfully!')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                      </button>
+                      <button class="action-icon-btn delete" title="Delete Bot" onclick="if(confirm('Delete this bot?')) alert('Bot removed.');">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -274,6 +298,22 @@
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(viewId).classList.add('active');
       btnElement.classList.add('active');
+    }
+
+    // Import Trigger Handler
+    function triggerImport(source) {
+      if(source === 'computer') {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.xml,.json';
+        input.onchange = e => {
+          const file = e.target.files[0];
+          if(file) alert(`Successfully imported bot: ${file.name}`);
+        };
+        input.click();
+      } else if(source === 'gdrive') {
+        alert('Connecting to Google Drive picker...');
+      }
     }
 
     // Manual Trading Digits Generator (0-9)
