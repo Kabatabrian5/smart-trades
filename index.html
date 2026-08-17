@@ -195,7 +195,6 @@
         </div>
         
         <div class="import-options">
-          <!-- Local Card Triggering Modal with Recent Tab Active -->
           <div class="import-card" onclick="openLoadStrategyModal('recent')">
             <div class="import-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
@@ -203,7 +202,6 @@
             <div style="font-size: 13px; font-weight: 600; color: #374151;">My computer</div>
           </div>
           
-          <!-- Google Drive Card Triggering Modal with Google Drive Tab Active -->
           <div class="import-card" onclick="openLoadStrategyModal('gdrive')">
             <div class="import-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M8.5 2H15.5L22 13.5H15L8.5 2Z" fill="#FBBF24"/><path d="M2 13.5H9L15.5 24H8.5L2 13.5Z" fill="#3B82F6"/><path d="M7.5 13.5H16.5L22 24H13L7.5 13.5Z" fill="#10B981"/></svg>
@@ -218,7 +216,7 @@
             <div style="font-size: 13px; font-weight: 600; color: #374151;">Bot Builder</div>
           </div>
 
-          <div class="import-card" onclick="alert('Quick strategy builder template activated!')">
+          <div class="import-card" onclick="handleNewBotUpload('Quick Strategy Bot')">
             <div class="import-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
             </div>
@@ -237,29 +235,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style="color: #3b5bdb; font-weight: 500;">Untitled Bot</td>
-                <td style="color: #6b7280;">15 Aug 2026</td>
-                <td>
-                  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <span style="color: #6b7280; display: flex; align-items: center; gap: 6px;">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                      Unsaved
-                    </span>
-                    <div class="table-actions">
-                      <button class="action-icon-btn" title="Duplicate Bot" onclick="alert('Duplicating bot...')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      </button>
-                      <button class="action-icon-btn" title="Save Bot" onclick="alert('Bot saved successfully!')">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                      </button>
-                      <button class="action-icon-btn delete" title="Delete Bot" onclick="if(confirm('Delete this bot?')) alert('Bot removed.');">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                      </button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+              <!-- Populated dynamically via JavaScript state -->
             </tbody>
           </table>
         </div>
@@ -314,7 +290,7 @@
     </footer>
   </div>
 
-  <!-- Load Strategy Modal Popup (Dynamic content based on active tab) -->
+  <!-- Load Strategy Modal Popup -->
   <div id="loadStrategyModal" class="modal-overlay">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -330,7 +306,7 @@
         <!-- Dynamically injected content -->
       </div>
       <div class="modal-footer-bar" id="modalFooterBar">
-        <button class="btn-primary-blue" onclick="alert('Opening selected bot strategy...'); closeLoadStrategyModal();">Open</button>
+        <button class="btn-primary-blue" onclick="loadSelectedBotIntoWorkspace();">Open</button>
       </div>
     </div>
   </div>
@@ -342,6 +318,97 @@
   </div>
 
   <script>
+    // Dynamic Bot State Management (Starts empty)
+    let userBots = [];
+
+    function renderBotList() {
+      const tbody = document.querySelector('.bots-table tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (userBots.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="3" style="text-align: center; color: #6b7280; padding: 24px;">
+              No bots uploaded yet. Import or save a strategy to see it listed here.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      userBots.forEach((bot, index) => {
+        tbody.innerHTML += `
+          <tr>
+            <td style="color: #3b5bdb; font-weight: 500;">${bot.name}</td>
+            <td style="color: #6b7280;">${bot.date}</td>
+            <td>
+              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span style="color: #6b7280; display: flex; align-items: center; gap: 6px;">
+                  📄 ${bot.status}
+                </span>
+                <div class="table-actions">
+                  <button class="action-icon-btn" title="Duplicate Bot" onclick="duplicateBot(${index})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  </button>
+                  <button class="action-icon-btn" title="Save Bot" onclick="saveBot(${index})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  </button>
+                  <button class="action-icon-btn delete" title="Delete Bot" onclick="deleteBot(${index})">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function handleNewBotUpload(customName = 'Imported Bot') {
+      const newBot = {
+        name: customName,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        status: 'Unsaved'
+      };
+      userBots.push(newBot);
+      renderBotList();
+      closeLoadStrategyModal();
+      alert(`Successfully loaded "${customName}" into workspace.`);
+    }
+
+    function deleteBot(index) {
+      if (confirm('Are you sure you want to delete this bot?')) {
+        userBots.splice(index, 1);
+        renderBotList();
+      }
+    }
+
+    function duplicateBot(index) {
+      const target = userBots[index];
+      userBots.push({
+        name: `${target.name} (Copy)`,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        status: 'Unsaved'
+      });
+      renderBotList();
+    }
+
+    function saveBot(index) {
+      userBots[index].status = 'Saved';
+      renderBotList();
+      alert(`Bot "${userBots[index].name}" saved successfully!`);
+    }
+
+    function loadSelectedBotIntoWorkspace() {
+      handleNewBotUpload('Imported XML Bot');
+    }
+
+    // Initialize bot table on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderBotList();
+    });
+
     // Splash Loading animation
     let progress = 0;
     const bar = document.getElementById('loadingBar');
@@ -388,16 +455,26 @@
       if (tabName === 'recent') {
         document.getElementById('tabRecent').classList.add('active');
         footerBar.style.display = 'flex';
+        
+        if (userBots.length === 0) {
+          bodyContent.innerHTML = `
+            <div style="padding: 40px; width: 100%; text-align: center; color: #6b7280;">
+              No recent bots available. Upload a bot or XML file to see previews here.
+            </div>
+          `;
+          footerBar.style.display = 'none';
+          return;
+        }
+
         bodyContent.innerHTML = `
           <div class="recent-sidebar">
             <div class="recent-item active">
               <div class="recent-item-info">
-                <span class="recent-item-title">Untitled Bot</span>
-                <span class="recent-item-date">15 Aug 2026</span>
+                <span class="recent-item-title">${userBots[userBots.length - 1].name}</span>
+                <span class="recent-item-date">${userBots[userBots.length - 1].date}</span>
               </div>
               <div class="recent-item-badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-                Unsaved
+                📄 ${userBots[userBots.length - 1].status}
               </div>
             </div>
           </div>
@@ -434,7 +511,7 @@
             <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 40px 20px; width: 100%; box-sizing: border-box; background: #fafafa;">
               <div style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Drag your XML file here</div>
               <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">or, if you prefer...</div>
-              <button class="btn-primary-blue" onclick="alert('Select XML file...')">Select an XML file from your device</button>
+              <button class="btn-primary-blue" onclick="handleNewBotUpload('Uploaded_Bot_File.xml')">Select an XML file from your device</button>
             </div>
           </div>
         `;
@@ -448,13 +525,12 @@
               To import your bot from your Google Drive, you'll need to sign in to your Google account.<br>
               To know how Google Drive handles your data, please review Deriv's Privacy policy.
             </div>
-            <button class="btn-primary-blue" onclick="alert('Redirecting to Google OAuth Sign In...')">Sign in</button>
+            <button class="btn-primary-blue" onclick="handleNewBotUpload('Google_Drive_Bot.xml')">Sign in & Import</button>
           </div>
         `;
       }
     }
 
-    // Close modal when clicking outside overlay
     window.onclick = function(event) {
       const modal = document.getElementById('loadStrategyModal');
       if (event.target === modal) {
