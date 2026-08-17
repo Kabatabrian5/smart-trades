@@ -82,31 +82,47 @@
 
     /* Modal / Popup Styles matching exact spec */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-dialog { background: #fff; width: 720px; max-width: 90%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.2s ease; }
+    .modal-dialog { background: #fff; width: 920px; max-width: 95%; height: 600px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.2s ease; }
     @keyframes modalFadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     
     .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; font-weight: 600; font-size: 16px; color: #111827; }
     .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #6b7280; padding: 0; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; }
     .modal-close:hover { background: #f3f4f6; color: #111827; }
     
-    .modal-tabs { display: flex; border-bottom: 1px solid #e5e7eb; padding: 0 24px; gap: 32px; }
+    .modal-tabs { display: flex; border-bottom: 1px solid #e5e7eb; padding: 0 24px; gap: 32px; flex-shrink: 0; }
     .modal-tab { padding: 14px 0; background: none; border: none; font-size: 14px; font-weight: 500; cursor: pointer; color: #6b7280; position: relative; }
     .modal-tab.active { color: #2563eb; font-weight: 600; }
     .modal-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: #2563eb; }
     
-    .modal-body { padding: 24px; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: 280px; justify-content: flex-start; }
+    .modal-body { padding: 0; display: flex; flex: 1; overflow: hidden; background: #fff; }
     
-    /* Local Tab Specific Styles */
-    .warning-banner { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; margin-bottom: 20px; text-align: left; }
-    .warning-icon { color: #d97706; display: flex; align-items: center; flex-shrink: 0; }
-    .warning-text { font-size: 13px; color: #b45309; }
+    /* Recent Tab Specific Layout */
+    .recent-sidebar { width: 340px; border-right: 1px solid #e5e7eb; background: #fafafa; display: flex; flex-direction: column; overflow-y: auto; }
+    .recent-item { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #fff; transition: background 0.15s; }
+    .recent-item.active { background: #eff6ff; border-left: 4px solid #2563eb; }
+    .recent-item-info { display: flex; flex-direction: column; gap: 4px; }
+    .recent-item-title { font-size: 14px; font-weight: 600; color: #111827; }
+    .recent-item-date { font-size: 12px; color: #6b7280; }
+    .recent-item-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #4b5563; background: #f3f4f6; padding: 4px 8px; border-radius: 4px; }
+
+    .recent-preview-area { flex: 1; display: flex; flex-direction: column; background: #fff; position: relative; overflow: hidden; }
+    .preview-header-label { padding: 16px 20px 8px 20px; font-size: 14px; font-weight: 600; color: #374151; }
+    .preview-canvas-container { flex: 1; margin: 12px 20px 20px 20px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     
-    .dropzone-box { border: 2px dashed #d1d5db; border-radius: 8px; padding: 40px 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
-    .desktop-screen-icon { width: 56px; height: 56px; margin-bottom: 16px; color: #0f4c81; display: flex; align-items: center; justify-content: center; }
-    .dropzone-title { font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px; }
-    .dropzone-subtitle { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
-    .btn-primary-blue { background: #3b82f6; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: background 0.2s; }
-    .btn-primary-blue:hover { background: #2563eb; }
+    /* Simulated Workspace Blocks Preview */
+    .blockly-preview-mockup { width: 100%; height: 100%; position: relative; background: #ffffff; padding: 20px; box-sizing: border-box; }
+    .block-card { background: #0f4c81; color: #fff; border-radius: 6px; padding: 12px; margin-bottom: 12px; width: 360px; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .block-card-header { font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .block-field { background: #fff; color: #111827; padding: 6px 10px; border-radius: 4px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+    
+    .preview-zoom-controls { position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; background: #fff; border: 1px solid #d1d5db; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .zoom-btn { background: none; border: none; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; }
+    .zoom-btn:hover { background: #f3f4f6; }
+    .zoom-btn:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+
+    .modal-footer-bar { padding: 12px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; background: #fff; flex-shrink: 0; }
+    .btn-primary-blue { background: #2563eb; color: #fff; border: none; padding: 10px 28px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+    .btn-primary-blue:hover { background: #1d4ed8; }
 
     /* Manual Trading Layout Styles */
     .trading-workspace { display: grid; grid-template-columns: 280px 1fr 320px; gap: 20px; background: #131722; color: #fff; border-radius: 8px; padding: 20px; }
@@ -179,8 +195,8 @@
         </div>
         
         <div class="import-options">
-          <!-- Computer Card Triggering Modal with Local Tab Active -->
-          <div class="import-card" onclick="openLoadStrategyModal('local')">
+          <!-- Local Card Triggering Modal with Recent Tab Active -->
+          <div class="import-card" onclick="openLoadStrategyModal('recent')">
             <div class="import-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
             </div>
@@ -313,6 +329,9 @@
       <div class="modal-body" id="modalBodyContent">
         <!-- Dynamically injected content -->
       </div>
+      <div class="modal-footer-bar" id="modalFooterBar">
+        <button class="btn-primary-blue" onclick="alert('Opening selected bot strategy...'); closeLoadStrategyModal();">Open</button>
+      </div>
     </div>
   </div>
 
@@ -352,7 +371,7 @@
     }
 
     // Modal Popup Controls & Dynamic Tab Rendering
-    function openLoadStrategyModal(tabName = 'local') {
+    function openLoadStrategyModal(tabName = 'recent') {
       document.getElementById('loadStrategyModal').style.display = 'flex';
       switchModalTab(tabName);
     }
@@ -364,66 +383,75 @@
     function switchModalTab(tabName) {
       document.querySelectorAll('.modal-tab').forEach(el => el.classList.remove('active'));
       const bodyContent = document.getElementById('modalBodyContent');
+      const footerBar = document.getElementById('modalFooterBar');
 
-      if (tabName === 'local') {
-        document.getElementById('tabLocal').classList.add('active');
+      if (tabName === 'recent') {
+        document.getElementById('tabRecent').classList.add('active');
+        footerBar.style.display = 'flex';
         bodyContent.innerHTML = `
-          <div class="warning-banner">
-            <div class="warning-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div class="recent-sidebar">
+            <div class="recent-item active">
+              <div class="recent-item-info">
+                <span class="recent-item-title">Untitled Bot</span>
+                <span class="recent-item-date">15 Aug 2026</span>
+              </div>
+              <div class="recent-item-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                Unsaved
+              </div>
             </div>
-            <div class="warning-text">Importing XML files from Binary Bot and other third-party platforms may take longer.</div>
           </div>
-          <div class="dropzone-box">
-            <div class="desktop-screen-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+          <div class="recent-preview-area">
+            <div class="preview-header-label">Preview</div>
+            <div class="preview-canvas-container">
+              <div class="blockly-preview-mockup">
+                <div class="block-card">
+                  <div class="block-card-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
+                    1. Trade parameters
+                  </div>
+                  <div class="block-field"><span>Market: Derived > Continuous Indices > Volatility 10 Index</span><span>▼</span></div>
+                  <div class="block-field" style="margin-top:4px;"><span>Trade Type: Up/Down > Rise/Fall</span><span>▼</span></div>
+                  <div class="block-field" style="margin-top:4px;"><span>Contract Type: Both</span><span>▼</span></div>
+                </div>
+              </div>
+              <div class="preview-zoom-controls">
+                <button class="zoom-btn" onclick="alert('Zoom in')">+</button>
+                <button class="zoom-btn" onclick="alert('Zoom out')">-</button>
+              </div>
             </div>
-            <div class="dropzone-title">Drag your XML file here</div>
-            <div class="dropzone-subtitle">or, if you prefer...</div>
-            <button class="btn-primary-blue" onclick="triggerXmlFileSelect()">Select an XML file from your device</button>
           </div>
         `;
-      } else if (tabName === 'gdrive') {
-        document.getElementById('tabGdrive').classList.add('active');
+      } else if (tabName === 'local') {
+        document.getElementById('tabLocal').classList.add('active');
+        footerBar.style.display = 'none';
         bodyContent.innerHTML = `
-          <div style="width: 64px; height: 64px; margin-bottom: 16px;">
-            <svg viewBox="0 0 87.3 78" width="100%" height="100%">
-              <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066da"/>
-              <path d="M43.65 25L29.9 1.2C28.55.4 26.95 0 25.35 0H12.6c-1.6 0-3.2.4-4.55 1.2L21.8 25h21.85z" fill="#00ac47"/>
-              <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 5.4-9.35c.8-1.4 1.2-2.95 1.2-4.5H59.8l13.75 23.8z" fill="#ea4335"/>
-              <path d="M43.65 25L57.4 48.8h29.9c0-1.55-.4-3.1-1.2-4.5L73.55 21.2C71.8 18.15 68.75 16 65.3 15H22l21.65 10z" fill="#00832d"/>
-              <path d="M59.8 48.8H27.55L13.8 72.6c1.35.8 2.95 1.2 4.55 1.2h52.75c1.6 0 3.2-.4 4.55-1.2L59.8 48.8z" fill="#2684fc"/>
-              <path d="M54.1 25L43.65 6.8 33.2 25h20.9z" fill="#ffba00"/>
-            </svg>
+          <div style="padding: 30px; width: 100%; box-sizing: border-box; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: 100%; margin-bottom: 20px; text-align: left;">
+              <span style="color: #d97706;">⚠️</span>
+              <span style="font-size: 13px; color: #b45309;">Importing XML files from Binary Bot and other third-party platforms may take longer.</span>
+            </div>
+            <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 40px 20px; width: 100%; box-sizing: border-box; background: #fafafa;">
+              <div style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Drag your XML file here</div>
+              <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">or, if you prefer...</div>
+              <button class="btn-primary-blue" onclick="alert('Select XML file...')">Select an XML file from your device</button>
+            </div>
           </div>
-          <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px;">Google Drive</div>
-          <div style="font-size: 13px; color: #4b5563; line-height: 1.5; max-width: 440px; margin-bottom: 24px;">
-            To import your bot from your Google Drive, you'll need to sign in to your Google account.<br>
-            To know how Google Drive handles your data, please review Deriv's Privacy policy.
-          </div>
-          <button class="btn-primary-blue" onclick="alert('Redirecting to Google OAuth Sign In...')">Sign in</button>
         `;
       } else {
-        document.getElementById('tabRecent').classList.add('active');
+        document.getElementById('tabGdrive').classList.add('active');
+        footerBar.style.display = 'none';
         bodyContent.innerHTML = `
-          <div style="font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 8px;">Recent Strategies</div>
-          <div style="font-size: 13px; color: #6b7280; padding: 40px 0;">No recent strategy files found. Load a strategy from Local or Google Drive to get started.</div>
+          <div style="padding: 40px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px;">Google Drive</div>
+            <div style="font-size: 13px; color: #4b5563; line-height: 1.5; max-width: 440px; margin-bottom: 24px;">
+              To import your bot from your Google Drive, you'll need to sign in to your Google account.<br>
+              To know how Google Drive handles your data, please review Deriv's Privacy policy.
+            </div>
+            <button class="btn-primary-blue" onclick="alert('Redirecting to Google OAuth Sign In...')">Sign in</button>
+          </div>
         `;
       }
-    }
-
-    function triggerXmlFileSelect() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.xml';
-      input.onchange = e => {
-        const file = e.target.files[0];
-        if(file) {
-          alert(`Successfully loaded XML bot: ${file.name}`);
-          closeLoadStrategyModal();
-        }
-      };
-      input.click();
     }
 
     // Close modal when clicking outside overlay
