@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Trades - Powered by Deriv</title>
+  <style>
+    body { background: #0b0e14; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+    
+    /* Splash Loading Screen Styles */
+    #splashScreen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100vh;
+      background: #0b0e14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    .splash-card {
+      background: #0e1117;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      width: 400px;
+      box-shadow: 0 0 30px rgba(0, 208, 156, 0.1);
+    }
+    .loading-bar-container {
+      background: #1f2937;
+      border-radius: 4px;
+      height: 6px;
+      width: 100%;
+      margin: 20px 0 10px 0;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      background: #00d09c;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Main App Interface (Hidden until loaded) */
+    #mainApp {
+      display: none;
+    }
+
+    /* Top Navigation Header */
+    header { background: #131722; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid #2a2e39; }
+    .brand { font-weight: bold; font-size: 1.1rem; color: #00d09c; display: flex; align-items: center; gap: 8px; }
+    .brand span { font-size: 0.75rem; color: #848e9c; }
+    .nav-tabs { display: flex; gap: 15px; }
+    .nav-tab { background: #1e222d; border: none; color: #848e9c; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .nav-tab.active { background: #ff4458; color: #fff; }
+
+    /* Main Workspace Grid */
+    .workspace { display: grid; grid-template-columns: 280px 1fr 320px; height: calc(100vh - 55px); }
+
+    /* Left Sidebar: Positions / Journal */
+    .panel-left { background: #131722; border-right: 1px solid #2a2e39; display: flex; flex-direction: column; }
+    .panel-header { display: flex; border-bottom: 1px solid #2a2e39; }
+    .panel-header button { flex: 1; background: none; border: none; color: #848e9c; padding: 12px; cursor: pointer; font-size: 12px; font-weight: bold; border-bottom: 2px solid transparent; }
+    .panel-header button.active { color: #fff; border-bottom-color: #ff4458; }
+    .empty-positions { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #848e9c; font-size: 13px; text-align: center; padding: 20px; }
+
+    /* Center Trading Arena */
+    .panel-center { background: #0b0e14; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
+    .market-selector { background: #131722; border: 1px solid #2a2e39; padding: 8px 15px; border-radius: 6px; font-weight: bold; margin-bottom: 30px; cursor: pointer; }
+    
+    /* Digit Grid UI (0-9 Circles) */
+    .digits-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; max-width: 450px; width: 100%; margin-top: 40px; }
+    .digit-card { background: #131722; border: 2px solid #2a2e39; border-radius: 50%; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; position: relative; }
+    .digit-card:hover { border-color: #848e9c; }
+    .digit-card.selected { border-color: #00d09c; background: #002b20; }
+    .digit-num { font-size: 22px; font-weight: bold; }
+    .digit-percent { font-size: 11px; color: #848e9c; }
+
+    /* Right Sidebar: Controls */
+    .panel-right { background: #131722; border-left: 1px solid #2a2e39; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+    .control-group { margin-bottom: 15px; }
+    .control-group label { font-size: 12px; color: #848e9c; display: block; margin-bottom: 5px; }
+    .control-row { display: flex; gap: 10px; }
+    .control-row button { background: #1e222d; border: 1px solid #2a2e39; color: #fff; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .control-row input { background: #0b0e14; border: 1px solid #2a2e39; color: #fff; text-align: center; font-weight: bold; flex: 1; border-radius: 4px; }
+    
+    /* Action Buttons (Matches / Differs) */
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .btn-match { background: #00d09c; color: #000; border: none; padding: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; }
+    .btn-differ { background: #ff4458; color: #fff; border: none; padding: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; }
+    .btn-signin-trade { background: #ff4458; color: #fff; border: none; width: 100%; padding: 12px; font-weight: bold; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Loading Screen -->
+  <div id="splashScreen">
+    <div class="splash-card">
+      <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">Smart Trades</div>
+      <div style="font-size: 12px; color: #00d09c; margin-bottom: 20px;">AI powered bots</div>
+      <div class="loading-bar-container">
+        <div class="loading-bar-fill" id="loadingBar"></div>
+      </div>
+      <div id="loadingText" style="font-size: 11px; color: #848e9c; margin-top: 8px;">Initializing secure connection...</div>
+    </div>
+  </div>
+
+  <!-- Main Trading Application (Initially Hidden) -->
+  <div id="mainApp">
+    <!-- Top Navigation Header -->
+    <header>
+      <div class="brand">
+        Smart Trades <span>Pro</span> 
+        <small style="font-size: 10px; color: #848e9c; margin-left: 5px;">powered by Deriv</small>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active">Manual trading</button>
+        <button class="nav-tab" style="background:none; color:#848e9c;">Bots</button>
+        <button class="nav-tab" style="background:none; color:#848e9c;">Bulk</button>
+        <button class="nav-tab" style="background:none; color:#848e9c;">AI</button>
+      </div>
+      <div>
+        <button class="nav-tab" style="background:#1e222d; color:#fff;">Cashier</button>
+        <button class="nav-tab" style="background:#ff4458; color:#fff; margin-left: 10px;">Sign up</button>
+      </div>
+    </header>
+
+    <!-- Workspace Structure -->
+    <div class="workspace">
+      
+      <!-- Left Positions Panel -->
+      <div class="panel-left">
+        <div class="panel-header">
+          <button class="active">Summary</button>
+          <button>Transactions</button>
+          <button>Journal</button>
+        </div>
+        <div class="empty-positions">
+          <div style="font-size: 24px; margin-bottom: 10px;">💼</div>
+          No positions yet
+        </div>
+        <div style="padding: 15px; border-top: 1px solid #2a2e39; font-size: 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #848e9c;">
+            <span>Total stake</span><span>Total payout</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
+            <span>0.00 USD</span><span>0.00 USD</span>
+          </div>
+          <button style="width: 100%; background: #1e222d; border: 1px solid #2a2e39; color: #fff; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+        </div>
+      </div>
+
+      <!-- Center Trading Arena -->
+      <div class="panel-center">
+        <div class="market-selector">Volatility 100 ▾</div>
+        <div id="liveTickDisplay" style="font-size: 28px; font-weight: bold; color: #00d09c; letter-spacing: 1px;">—</div>
+        
+        <!-- Digits 0 to 9 Rendered dynamically -->
+        <div class="digits-container" id="digitGridUI"></div>
+      </div>
+
+      <!-- Right Controls Panel -->
+      <div class="panel-right">
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 15px; color: #848e9c;">
+            <span>Matches/Differs</span>
+            <span id="accountBalance">0.00 USD</span>
+          </div>
+
+          <div class="control-group">
+            <label>Ticks</label>
+            <div class="control-row">
+              <button onclick="adjustValue('ticks', -1)">-</button>
+              <input type="text" id="ticksInput" value="1">
+              <button onclick="adjustValue('ticks', 1)">+</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label>Stake</label>
+            <div class="control-row">
+              <button onclick="adjustValue('stake', -1)">-</button>
+              <input type="text" id="stakeInput" value="10">
+              <button onclick="adjustValue('stake', 1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="action-grid">
+            <button class="btn-match" onclick="placeTrade('DIGITMATCH')">Matches<br><span style="font-size:10px;">866.7%</span></button>
+            <button class="btn-differ" onclick="placeTrade('DIGITDIFF')">Differs<br><span style="font-size:10px;">5.3%</span></button>
+          </div>
+          <button class="btn-signin-trade" onclick="connectDerivAccount()">→ Sign in & Trade</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // 1. Splash Screen Loading Progress Simulation
+    let progress = 0;
+    const bar = document.getElementById('loadingBar');
+    const txt = document.getElementById('loadingText');
+
+    const loadingInterval = setInterval(() => {
+      progress += Math.floor(Math.random() * 15) + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(loadingInterval);
+        txt.innerText = "Ready!";
+        setTimeout(() => {
+          document.getElementById('splashScreen').style.opacity = '0';
+          setTimeout(() => {
+            document.getElementById('splashScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+          }, 500);
+        }, 300);
+      }
+      bar.style.width = progress + '%';
+      if (progress > 40) txt.innerText = "Connecting to Deriv WebSocket API...";
+      if (progress > 80) txt.innerText = "Optimizing execution logic...";
+    }, 150);
+
+    // 2. Render Digit Selection Circles (0-9)
+    let selectedDigit = 5;
+    let activeSymbol = "R_100";
+    const gridUI = document.getElementById('digitGridUI');
+    
+    for (let i = 0; i <= 9; i++) {
+      const card = document.createElement('div');
+      card.className = `digit-card ${i === selectedDigit ? 'selected' : ''}`;
+      card.id = `digit-${i}`;
+      card.innerHTML = `
+        <div class="digit-num">${i}</div>
+        <div class="digit-percent">0%</div>
+      `;
+      card.onclick = () => {
+        document.querySelectorAll('.digit-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedDigit = i;
+      };
+      gridUI.appendChild(card);
+    }
+
+    // 3. Control adjustment helpers (- / + buttons)
+    function adjustValue(type, amount) {
+      if (type === 'ticks') {
+        let input = document.getElementById('ticksInput');
+        let val = parseInt(input.value) + amount;
+        if (val >= 1 && val <= 10) input.value = val;
+      } else if (type === 'stake') {
+        let input = document.getElementById('stakeInput');
+        let val = parseFloat(input.value) + amount;
+        if (val >= 0.35) input.value = val.toFixed(2);
+      }
+    }
+
+    // 4. Live Deriv WebSocket Connection
+    const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ ticks: activeSymbol, subscribe: 1 }));
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.msg_type === 'tick') {
+        const price = data.tick.quote;
+        const pipSize = data.tick.pip_size || 2;
+        document.getElementById('liveTickDisplay').innerText = price.toFixed(pipSize);
+        
+        const priceString = price.toFixed(pipSize);
+        const lastDigit = priceString.charAt(priceString.length - 1);
+        
+        for(let i=0; i<=9; i++) {
+          let el = document.getElementById(`digit-${i}`);
+          if(i.toString() === lastDigit) {
+            el.style.boxShadow = "0 0 12px #00d09c";
+          } else {
+            el.style.boxShadow = "none";
+          }
+        }
+      }
+    };
+
+    // 5. Trade Execution via Deriv API
+    function placeTrade(contractType) {
+      const token = prompt("Enter your Deriv API Token to authorize trade execution:");
+      if (!token) return;
+
+      const stake = document.getElementById('stakeInput').value;
+      const duration = document.getElementById('ticksInput').value;
+
+      ws.send(JSON.stringify({ authorize: token }));
+
+      ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        if (response.msg_type === 'authorize') {
+          document.getElementById('accountBalance').innerText = `${response.authorize.balance} ${response.authorize.currency}`;
+          
+          ws.send(JSON.stringify({
+            buy: 1,
+            price: parseFloat(stake),
+            parameters: {
+              amount: parseFloat(stake),
+              basis: "stake",
+              contract_type: contractType,
+              currency: "USD",
+              duration: parseInt(duration),
+              duration_unit: "t",
+              symbol: activeSymbol,
+              barrier: selectedDigit.toString()
+            }
+          }));
+        }
+
+        if (response.msg_type === 'buy') {
+          alert(`Contract successfully purchased! ID: ${response.buy.contract_id}`);
+        }
+      };
+    }
+
+    function connectDerivAccount() {
+      placeTrade('DIGITMATCH');
+    }
+  </script>
+</body>
+</html>
