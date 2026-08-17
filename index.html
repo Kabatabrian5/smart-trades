@@ -82,7 +82,7 @@
 
     /* Modal / Popup Styles matching exact spec */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-dialog { background: #fff; width: 680px; max-width: 90%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.2s ease; }
+    .modal-dialog { background: #fff; width: 720px; max-width: 90%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.2s ease; }
     @keyframes modalFadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     
     .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; font-weight: 600; font-size: 16px; color: #111827; }
@@ -94,11 +94,18 @@
     .modal-tab.active { color: #2563eb; font-weight: 600; }
     .modal-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: #2563eb; }
     
-    .modal-body { padding: 40px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: 280px; justify-content: center; }
-    .gdrive-logo-icon { width: 64px; height: 64px; margin-bottom: 16px; }
-    .modal-title { font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px; }
-    .modal-desc { font-size: 13px; color: #4b5563; line-height: 1.5; max-width: 440px; margin-bottom: 24px; }
-    .btn-primary-blue { background: #3b82f6; color: #fff; border: none; padding: 10px 28px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+    .modal-body { padding: 24px; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: 280px; justify-content: flex-start; }
+    
+    /* Local Tab Specific Styles */
+    .warning-banner { background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; margin-bottom: 20px; text-align: left; }
+    .warning-icon { color: #d97706; display: flex; align-items: center; flex-shrink: 0; }
+    .warning-text { font-size: 13px; color: #b45309; }
+    
+    .dropzone-box { border: 2px dashed #d1d5db; border-radius: 8px; padding: 40px 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; }
+    .desktop-screen-icon { width: 56px; height: 56px; margin-bottom: 16px; color: #0f4c81; display: flex; align-items: center; justify-content: center; }
+    .dropzone-title { font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px; }
+    .dropzone-subtitle { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+    .btn-primary-blue { background: #3b82f6; color: #fff; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; transition: background 0.2s; }
     .btn-primary-blue:hover { background: #2563eb; }
 
     /* Manual Trading Layout Styles */
@@ -172,15 +179,16 @@
         </div>
         
         <div class="import-options">
-          <div class="import-card" onclick="triggerImport('computer')">
+          <!-- Computer Card Triggering Modal with Local Tab Active -->
+          <div class="import-card" onclick="openLoadStrategyModal('local')">
             <div class="import-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
             </div>
             <div style="font-size: 13px; font-weight: 600; color: #374151;">My computer</div>
           </div>
           
-          <!-- Google Drive Card Triggering the Modal -->
-          <div class="import-card" onclick="openLoadStrategyModal()">
+          <!-- Google Drive Card Triggering Modal with Google Drive Tab Active -->
+          <div class="import-card" onclick="openLoadStrategyModal('gdrive')">
             <div class="import-icon">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M8.5 2H15.5L22 13.5H15L8.5 2Z" fill="#FBBF24"/><path d="M2 13.5H9L15.5 24H8.5L2 13.5Z" fill="#3B82F6"/><path d="M7.5 13.5H16.5L22 24H13L7.5 13.5Z" fill="#10B981"/></svg>
             </div>
@@ -290,7 +298,7 @@
     </footer>
   </div>
 
-  <!-- Google Drive Load Strategy Modal Popup -->
+  <!-- Load Strategy Modal Popup (Dynamic content based on active tab) -->
   <div id="loadStrategyModal" class="modal-overlay">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -298,27 +306,12 @@
         <button class="modal-close" onclick="closeLoadStrategyModal()">&times;</button>
       </div>
       <div class="modal-tabs">
-        <button class="modal-tab" onclick="alert('Switching to Recent tab')">Recent</button>
-        <button class="modal-tab" onclick="alert('Switching to Local tab')">Local</button>
-        <button class="modal-tab active">Google Drive</button>
+        <button class="modal-tab" id="tabRecent" onclick="switchModalTab('recent')">Recent</button>
+        <button class="modal-tab" id="tabLocal" onclick="switchModalTab('local')">Local</button>
+        <button class="modal-tab" id="tabGdrive" onclick="switchModalTab('gdrive')">Google Drive</button>
       </div>
-      <div class="modal-body">
-        <div class="gdrive-logo-icon">
-          <svg viewBox="0 0 87.3 78" width="100%" height="100%">
-            <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066da"/>
-            <path d="M43.65 25L29.9 1.2C28.55.4 26.95 0 25.35 0H12.6c-1.6 0-3.2.4-4.55 1.2L21.8 25h21.85z" fill="#00ac47"/>
-            <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 5.4-9.35c.8-1.4 1.2-2.95 1.2-4.5H59.8l13.75 23.8z" fill="#ea4335"/>
-            <path d="M43.65 25L57.4 48.8h29.9c0-1.55-.4-3.1-1.2-4.5L73.55 21.2C71.8 18.15 68.75 16 65.3 15H22l21.65 10z" fill="#00832d"/>
-            <path d="M59.8 48.8H27.55L13.8 72.6c1.35.8 2.95 1.2 4.55 1.2h52.75c1.6 0 3.2-.4 4.55-1.2L59.8 48.8z" fill="#2684fc"/>
-            <path d="M54.1 25L43.65 6.8 33.2 25h20.9z" fill="#ffba00"/>
-          </svg>
-        </div>
-        <div class="modal-title">Google Drive</div>
-        <div class="modal-desc">
-          To import your bot from your Google Drive, you'll need to sign in to your Google account.<br>
-          To know how Google Drive handles your data, please review Deriv's Privacy policy.
-        </div>
-        <button class="btn-primary-blue" onclick="alert('Redirecting to Google OAuth Sign In...')">Sign in</button>
+      <div class="modal-body" id="modalBodyContent">
+        <!-- Dynamically injected content -->
       </div>
     </div>
   </div>
@@ -358,13 +351,79 @@
       btnElement.classList.add('active');
     }
 
-    // Modal Popup Controls
-    function openLoadStrategyModal() {
+    // Modal Popup Controls & Dynamic Tab Rendering
+    function openLoadStrategyModal(tabName = 'local') {
       document.getElementById('loadStrategyModal').style.display = 'flex';
+      switchModalTab(tabName);
     }
 
     function closeLoadStrategyModal() {
       document.getElementById('loadStrategyModal').style.display = 'none';
+    }
+
+    function switchModalTab(tabName) {
+      document.querySelectorAll('.modal-tab').forEach(el => el.classList.remove('active'));
+      const bodyContent = document.getElementById('modalBodyContent');
+
+      if (tabName === 'local') {
+        document.getElementById('tabLocal').classList.add('active');
+        bodyContent.innerHTML = `
+          <div class="warning-banner">
+            <div class="warning-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div class="warning-text">Importing XML files from Binary Bot and other third-party platforms may take longer.</div>
+          </div>
+          <div class="dropzone-box">
+            <div class="desktop-screen-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+            </div>
+            <div class="dropzone-title">Drag your XML file here</div>
+            <div class="dropzone-subtitle">or, if you prefer...</div>
+            <button class="btn-primary-blue" onclick="triggerXmlFileSelect()">Select an XML file from your device</button>
+          </div>
+        `;
+      } else if (tabName === 'gdrive') {
+        document.getElementById('tabGdrive').classList.add('active');
+        bodyContent.innerHTML = `
+          <div style="width: 64px; height: 64px; margin-bottom: 16px;">
+            <svg viewBox="0 0 87.3 78" width="100%" height="100%">
+              <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066da"/>
+              <path d="M43.65 25L29.9 1.2C28.55.4 26.95 0 25.35 0H12.6c-1.6 0-3.2.4-4.55 1.2L21.8 25h21.85z" fill="#00ac47"/>
+              <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 5.4-9.35c.8-1.4 1.2-2.95 1.2-4.5H59.8l13.75 23.8z" fill="#ea4335"/>
+              <path d="M43.65 25L57.4 48.8h29.9c0-1.55-.4-3.1-1.2-4.5L73.55 21.2C71.8 18.15 68.75 16 65.3 15H22l21.65 10z" fill="#00832d"/>
+              <path d="M59.8 48.8H27.55L13.8 72.6c1.35.8 2.95 1.2 4.55 1.2h52.75c1.6 0 3.2-.4 4.55-1.2L59.8 48.8z" fill="#2684fc"/>
+              <path d="M54.1 25L43.65 6.8 33.2 25h20.9z" fill="#ffba00"/>
+            </svg>
+          </div>
+          <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px;">Google Drive</div>
+          <div style="font-size: 13px; color: #4b5563; line-height: 1.5; max-width: 440px; margin-bottom: 24px;">
+            To import your bot from your Google Drive, you'll need to sign in to your Google account.<br>
+            To know how Google Drive handles your data, please review Deriv's Privacy policy.
+          </div>
+          <button class="btn-primary-blue" onclick="alert('Redirecting to Google OAuth Sign In...')">Sign in</button>
+        `;
+      } else {
+        document.getElementById('tabRecent').classList.add('active');
+        bodyContent.innerHTML = `
+          <div style="font-size: 15px; font-weight: 600; color: #374151; margin-bottom: 8px;">Recent Strategies</div>
+          <div style="font-size: 13px; color: #6b7280; padding: 40px 0;">No recent strategy files found. Load a strategy from Local or Google Drive to get started.</div>
+        `;
+      }
+    }
+
+    function triggerXmlFileSelect() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.xml';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        if(file) {
+          alert(`Successfully loaded XML bot: ${file.name}`);
+          closeLoadStrategyModal();
+        }
+      };
+      input.click();
     }
 
     // Close modal when clicking outside overlay
@@ -372,20 +431,6 @@
       const modal = document.getElementById('loadStrategyModal');
       if (event.target === modal) {
         modal.style.display = 'none';
-      }
-    }
-
-    // Import Trigger Handler
-    function triggerImport(source) {
-      if(source === 'computer') {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.xml,.json';
-        input.onchange = e => {
-          const file = e.target.files[0];
-          if(file) alert(`Successfully imported bot: ${file.name}`);
-        };
-        input.click();
       }
     }
 
