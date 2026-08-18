@@ -1,117 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Maintenance - Smart Trades</title>
-  <style>
-    body {
-      background: #0b0e14;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .maintenance-card {
-      background: #12161f;
-      border: 1px solid #1f2937;
-      border-radius: 16px;
-      padding: 50px 40px;
-      text-align: center;
-      width: 440px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-    .gear-container {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 24px auto;
-    }
-    .gear {
-      width: 100%;
-      height: 100%;
-      border: 6px dashed #00d09c;
-      border-radius: 50%;
-      animation: spin 6s linear infinite;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .gear-inner {
-      width: 32px;
-      height: 32px;
-      background: #00d09c;
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(0.85); opacity: 0.8; }
-      50% { transform: scale(1.1); opacity: 1; }
-    }
-    h1 {
-      font-size: 22px;
-      font-weight: bold;
-      margin-bottom: 12px;
-      color: #f3f4f6;
-    }
-    p {
-      font-size: 14px;
-      color: #9ca3af;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0, 208, 156, 0.1);
-      color: #00d09c;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1px solid rgba(0, 208, 156, 0.2);
-    }
-    .dot {
-      width: 8px;
-      height: 8px;
-      background: #00d09c;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #00d09c;
-      animation: blink 1.5s infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Trades - Bot Builder</title>
+    <style>
+        :root {
+            --bg-main: #f8f9fa;
+            --header-bg: #ffffff;
+            --primary-color: #2563eb;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --block-header: #0f2c59;
+            --panel-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            height: 60px;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f3f4f6;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.2rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background-color: #ffffff;
+            color: var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .btn-auth {
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: var(--primary-color);
+        }
+
+        .btn-signup {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Subheader Toolbar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.4rem 1rem;
+            height: 48px;
+        }
+
+        .toolbar-left, .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--text-main);
+        }
+
+        .toolbar-btn.primary {
+            background-color: #0d9488;
+            color: white;
+            border-color: #0d9488;
+            font-weight: 600;
+        }
+
+        .run-slider {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-left: 1px solid var(--border-color);
+            padding-left: 1rem;
+        }
+
+        /* Main Workspace Layout */
+        .workspace-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 108px);
+            position: relative;
+        }
+
+        /* Sidebar Blocks Menu */
+        .sidebar {
+            width: 260px;
+            background-color: #ffffff;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 0.75rem 1rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .blocks-nav {
+            overflow-y: auto;
+            flex: 1;
+            padding: 0.5rem 0;
+        }
+
+        .block-category {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .block-category:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Center Canvas Area */
+        .canvas-area {
+            flex: 1;
+            background-color: #f9fafb;
+            position: relative;
+            overflow: auto;
+            padding: 1.5rem;
+        }
+
+        .mock-block {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            margin-bottom: 1.5rem;
+            width: 450px;
+        }
+
+        .mock-block-header {
+            background-color: var(--block-header);
+            color: white;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        .mock-block-body {
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-select {
+            background: #f3f4f6;
+            border: 1px solid var(--border-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* Right Panel (Summary / Metrics) */
+        .right-panel {
+            width: 320px;
+            background-color: #ffffff;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .panel-tab.active {
+            color: var(--text-main);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .panel-content {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .summary-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 4rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .metric-box {
+            background: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .panel-actions {
+            margin-top: 1rem;
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="maintenance-card">
-    <div class="gear-container">
-      <div class="gear">
-        <div class="gear-inner"></div>
-      </div>
+    <!-- Top Navigation -->
+    <header class="navbar">
+        <div class="nav-left">
+            <div class="logo-area">
+                <span>⚡ SMART TRADES</span>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab">Dashboard</button>
+                <button class="nav-tab active">Bot Builder</button>
+                <button class="nav-tab">Bots</button>
+                <button class="nav-tab">proBot 2026</button>
+                <button class="nav-tab">Analysis</button>
+                <button class="nav-tab">Dcircles</button>
+                <button class="nav-tab">Signal</button>
+                <button class="nav-tab">Charts</button>
+                <button class="nav-tab">Multimarket</button>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <button class="btn-auth btn-login">Log in</button>
+            <button class="btn-auth btn-signup">Sign up</button>
+        </div>
+    </header>
+
+    <!-- Subheader Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <button class="toolbar-btn">🔄</button>
+            <button class="toolbar-btn">📁</button>
+            <button class="toolbar-btn">💾</button>
+            <button class="toolbar-btn">🖨️</button>
+            <button class="toolbar-btn">📊</button>
+            <button class="toolbar-btn">📈</button>
+            <button class="toolbar-btn">↩️</button>
+            <button class="toolbar-btn">🔄</button>
+            <button class="toolbar-btn">🔍+</button>
+            <button class="toolbar-btn">🔍-</button>
+        </div>
+        <div class="toolbar-right">
+            <div class="run-slider">
+                <span>Bot is not running</span>
+                <button class="toolbar-btn primary">▶ Run</button>
+            </div>
+        </div>
     </div>
-    <h1>System Maintenance</h1>
-    <p>We are currently upgrading our trading engine and infrastructure to serve you better. We will be back online shortly.</p>
-    <div class="status-badge">
-      <div class="dot"></div>
-      Maintenance in Progress
+
+    <!-- Main Workspace Layout -->
+    <div class="workspace-container">
+        <!-- Sidebar Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>Blocks menu</span>
+                <span>▲</span>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search...">
+            </div>
+            <div class="blocks-nav">
+                <div class="block-category">Trade parameters <span>›</span></div>
+                <div class="block-category">Purchase conditions <span>›</span></div>
+                <div class="block-category">Sell conditions (optional) <span>›</span></div>
+                <div class="block-category">Restart trading conditions <span>›</span></div>
+                <div class="block-category">Analysis <span>▾</span></div>
+                <div class="block-category">Utility <span>▾</span></div>
+            </div>
+        </aside>
+
+        <!-- Canvas Area -->
+        <main class="canvas-area">
+            <!-- Mock Block 1 -->
+            <div class="mock-block">
+                <div class="mock-block-header">1. Trade parameters</div>
+                <div class="mock-block-body">
+                    <div class="form-row">
+                        <span>Market:</span>
+                        <select class="form-select"><option>Derived</option></select>
+                        <select class="form-select"><option>Continuous Indices</option></select>
+                        <select class="form-select"><option>Volatility 10 Index</option></select>
+                    </div>
+                    <div class="form-row">
+                        <span>Trade Type:</span>
+                        <select class="form-select"><option>Up/Down</option></select>
+                        <select class="form-select"><option>Rise/Fall</option></select>
+                    </div>
+                    <div class="form-row">
+                        <span>Contract Type:</span>
+                        <select class="form-select"><option>Rise</option></select>
+                    </div>
+                    <div class="form-row">
+                        <span>Default Candle Interval:</span>
+                        <select class="form-select"><option>1 minute</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mock Block 2 -->
+            <div class="mock-block">
+                <div class="mock-block-header">2. Purchase conditions</div>
+                <div class="mock-block-body">
+                    <div class="form-row">
+                        <span>Purchase</span>
+                        <select class="form-select"><option>Rise</option></select>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Summary Panel -->
+        <aside class="right-panel">
+            <div class="panel-tabs">
+                <div class="panel-tab active">Summary</div>
+                <div class="panel-tab">Transactions</div>
+                <div class="panel-tab">Journal</div>
+            </div>
+            <div class="panel-content">
+                <div class="summary-placeholder">
+                    When you're ready to trade, hit <strong>Run</strong>.<br>
+                    You'll be able to track your bot's performance here.
+                </div>
+                <div>
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">0.00 AUD</div>
+                            <div class="metric-label">Total stake</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">0.00 AUD</div>
+                            <div class="metric-label">Total payout</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">0</div>
+                            <div class="metric-label">No. of runs</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-value">0 / 0</div>
+                            <div class="metric-label">Lost / Won</div>
+                        </div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
-  </div>
 
 </body>
 </html>
