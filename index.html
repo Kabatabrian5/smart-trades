@@ -51,7 +51,7 @@
     .ai-badge { background: #eef2ff; color: #4f46e5; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
     .ai-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
 
-    /* Navigation Menu Bar - Clean Pill Styling */
+    /* Navigation Menu Bar */
     .nav-menu { display: flex; gap: 10px; overflow-x: auto; padding: 12px 20px; background: #fff; border-bottom: 1px solid #e1e4e8; align-items: center; }
     .nav-btn { background: #f1f3f5; border: none; padding: 10px 20px; border-radius: 24px; font-size: 13px; font-weight: 600; cursor: pointer; color: #495057; white-space: nowrap; transition: all 0.2s ease; }
     .nav-btn.active { background: #3b5bdb; color: #fff; box-shadow: 0 4px 12px rgba(59, 91, 219, 0.3); }
@@ -74,11 +74,37 @@
     .bots-table th { color: #6b7280; font-weight: 600; padding-bottom: 12px; border-bottom: 1px solid #e1e4e8; }
     .bots-table td { padding: 14px 0; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
     
-    /* Action Icons inside Table */
     .table-actions { display: flex; gap: 14px; align-items: center; }
     .action-icon-btn { background: none; border: none; cursor: pointer; color: #4b5563; padding: 4px; display: flex; align-items: center; transition: color 0.2s; }
     .action-icon-btn:hover { color: #3b5bdb; }
     .action-icon-btn.delete:hover { color: #ff4458; }
+
+    /* Bot Builder Workspace (Blockly Style Interface) */
+    .builder-workspace-layout { display: flex; height: 720px; background: #1e1e1e; border-radius: 8px; overflow: hidden; border: 1px solid #333; position: relative; }
+    .builder-toolbox { width: 240px; background: #252526; border-right: 1px solid #333; display: flex; flex-direction: column; }
+    .toolbox-header { padding: 14px 16px; font-weight: bold; color: #fff; font-size: 14px; border-bottom: 1px solid #333; background: #2d2d2d; }
+    .toolbox-category-list { display: flex; flex-direction: column; padding: 8px 0; overflow-y: auto; flex: 1; }
+    .toolbox-category-item { padding: 12px 16px; color: #9cdcfe; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-left: 3px solid transparent; }
+    .toolbox-category-item:hover { background: #2a2d2e; color: #fff; }
+    .toolbox-category-item.active { background: #37373d; border-left-color: #007acc; color: #fff; font-weight: bold; }
+
+    .builder-canvas-area { flex: 1; background: #1e1e1e; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+    .canvas-toolbar { height: 48px; background: #2d2d2d; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+    .canvas-actions { display: flex; gap: 10px; align-items: center; }
+    .canvas-btn { background: #3c3c3c; border: 1px solid #555; color: #fff; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .canvas-btn:hover { background: #4e4e4e; }
+    .canvas-btn.run { background: #10b981; border-color: #059669; color: #fff; }
+    .canvas-btn.run:hover { background: #059669; }
+
+    .workspace-drop-zone { flex: 1; position: relative; background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px; padding: 40px; overflow: auto; display: flex; flex-direction: column; gap: 16px; }
+    
+    /* Mock Block Styles inside Canvas */
+    .block-node { background: #2b579a; color: #fff; border-radius: 6px; padding: 14px 18px; width: 340px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-size: 13px; cursor: move; border-left: 6px solid #1a365d; position: relative; }
+    .block-node.trade { background: #0f4c81; border-left-color: #072b4c; }
+    .block-node.logic { background: #8e44ad; border-left-color: #5b2c6f; }
+    .block-node.math { background: #27ae60; border-left-color: #145a32; }
+    .block-title { font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .block-param-row { background: rgba(0,0,0,0.2); padding: 8px 10px; border-radius: 4px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
 
     /* Modal / Popup Styles */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1000; justify-content: center; align-items: center; }
@@ -112,11 +138,6 @@
     .block-card { background: #0f4c81; color: #fff; border-radius: 6px; padding: 12px; margin-bottom: 12px; width: 360px; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .block-card-header { font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
     .block-field { background: #fff; color: #111827; padding: 6px 10px; border-radius: 4px; margin-top: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-    
-    .preview-zoom-controls { position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; background: #fff; border: 1px solid #d1d5db; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .zoom-btn { background: none; border: none; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #374151; }
-    .zoom-btn:hover { background: #f3f4f6; }
-    .zoom-btn:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
 
     .modal-footer-bar { padding: 12px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; background: #fff; flex-shrink: 0; }
     .btn-primary-blue { background: #2563eb; color: #fff; border: none; padding: 10px 28px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; }
@@ -171,8 +192,8 @@
 
     <!-- Navigation Menu Bar -->
     <div class="nav-menu">
-      <button class="nav-btn active" onclick="switchView('dashboardView', this)">Dashboard</button>
-      <button class="nav-btn" onclick="switchView('botBuilderView', this)">Bot Builder</button>
+      <button class="nav-btn" onclick="switchView('dashboardView', this)">Dashboard</button>
+      <button class="nav-btn active" onclick="switchView('botBuilderView', this)">Bot Builder</button>
       <button class="nav-btn" onclick="switchView('botsView', this)">Bots</button>
       <button class="nav-btn" onclick="switchView('proBotView', this)">proBot 2026</button>
       <button class="nav-btn" onclick="switchView('analysisView', this)">Analysis</button>
@@ -186,7 +207,7 @@
     </div>
 
     <!-- 1. Dashboard View -->
-    <div id="dashboardView" class="view-section active">
+    <div id="dashboardView" class="view-section">
       <div class="dashboard-container">
         <div style="font-size: 15px; color: #4b5563; font-weight: 500;">
           Import a bot from your computer or Google Drive, build it from scratch, or start with a quick strategy.
@@ -233,21 +254,55 @@
               </tr>
             </thead>
             <tbody>
-              <!-- Populated dynamically via JavaScript state -->
+              <!-- Populated dynamically -->
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
+    <!-- 2. Bot Builder View (Fully Implemented Blockly Visual Workspace) -->
+    <div id="botBuilderView" class="view-section active">
+      <div class="builder-workspace-layout">
+        <!-- Left Toolbox Category Menu -->
+        <div class="builder-toolbox">
+          <div class="toolbox-header">Blocks Toolbox</div>
+          <div class="toolbox-category-list">
+            <div class="toolbox-category-item active" onclick="switchBuilderCategory('trade', this)">📊 Trade Parameters</div>
+            <div class="toolbox-category-item" onclick="switchBuilderCategory('purchase', this)">🛒 Purchase Conditions</div>
+            <div class="toolbox-category-item" onclick="switchBuilderCategory('restart', this)">🔄 Restart Conditions</div>
+            <div class="toolbox-category-item" onclick="switchBuilderCategory('logic', this)">🔀 Logic & Conditions</div>
+            <div class="toolbox-category-item" onclick="switchBuilderCategory('math', this)">🔢 Math & Calculations</div>
+            <div class="toolbox-category-item" onclick="switchBuilderCategory('variables', this)">📦 Variables & Risk</div>
+            <div class="toolbox-category-item" onclick="switchBuilderCategory('analysis', this)">📈 Analysis & Stats</div>
+          </div>
+        </div>
+
+        <!-- Right Visual Canvas Area -->
+        <div class="builder-canvas-area">
+          <div class="canvas-toolbar">
+            <div style="font-size: 13px; color: #ccc; font-weight: 600;" id="currentWorkspaceTitle">Workspace: Custom Strategy (Unsaved)</div>
+            <div class="canvas-actions">
+              <button class="canvas-btn" onclick="alert('Workspace cleared!')">🗑️ Clear</button>
+              <button class="canvas-btn" onclick="openLoadStrategyModal('recent')">📂 Load XML</button>
+              <button class="canvas-btn" onclick="saveBot(0); alert('Strategy saved successfully to workspace!');">💾 Save</button>
+              <button class="canvas-btn run" onclick="alert('Bot execution started successfully via WebSocket simulation!')">▶ Run Bot</button>
+            </div>
+          </div>
+          <div class="workspace-drop-zone" id="builderCanvasContent">
+            <!-- Dynamic Blockly Mock Blocks -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Other Views Placeholders -->
-    <div id="botBuilderView" class="view-section"><h3>Bot Builder Interface</h3></div>
     <div id="botsView" class="view-section"><h3>Your Active Bots</h3></div>
     <div id="proBotView" class="view-section"><h3>proBot 2026 Engine</h3></div>
     <div id="analysisView" class="view-section"><h3>Market Analysis</h3></div>
     <div id="dcirclesView" class="view-section"><h3>Dcircles Module</h3></div>
 
-    <!-- 2. Manual Trading View -->
+    <!-- 3. Manual Trading View -->
     <div id="manualTradingView" class="view-section">
       <div class="trading-workspace">
         <div class="panel-left">
@@ -284,7 +339,7 @@
         <span class="risk-badge">⚠️ Risk Disclaimer</span>
       </div>
       <div>Developed by Matt</div>
-      <div id="footerTimestamp">2026-08-17 17:02:57 GMT</div>
+      <div id="footerTimestamp">2026-08-18 11:24:10 GMT</div>
     </footer>
   </div>
 
@@ -316,8 +371,10 @@
   </div>
 
   <script>
-    // Dynamic Bot State Management (Starts empty)
-    let userBots = [];
+    // Dynamic Bot State Management
+    let userBots = [
+      { name: 'Smart_Volatility_Bot_v1.xml', date: '18 Aug 2026', status: 'Saved' }
+    ];
 
     function renderBotList() {
       const tbody = document.querySelector('.bots-table tbody');
@@ -392,18 +449,87 @@
     }
 
     function saveBot(index) {
-      userBots[index].status = 'Saved';
-      renderBotList();
-      alert(`Bot "${userBots[index].name}" saved successfully!`);
+      if(userBots[index]) {
+        userBots[index].status = 'Saved';
+        renderBotList();
+      }
     }
 
     function loadSelectedBotIntoWorkspace() {
       handleNewBotUpload('Imported XML Bot');
+      switchView('botBuilderView', document.querySelector('.nav-menu button:nth-child(2)'));
     }
 
-    // Initialize bot table on load
+    // Bot Builder Toolbox Category Switcher & Visual Block Renderer
+    function switchBuilderCategory(category, element) {
+      document.querySelectorAll('.toolbox-category-item').forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+
+      const canvas = document.getElementById('builderCanvasContent');
+      document.getElementById('currentWorkspaceTitle').innerText = `Workspace: Category > ${element.innerText.trim()}`;
+
+      if (category === 'trade') {
+        canvas.innerHTML = `
+          <div class="block-node trade">
+            <div class="block-title"><span>1. Trade Parameters</span><span>⚙️</span></div>
+            <div class="block-param-row"><span>Market: Synthetic Indices</span><span>Volatility 100 Index</span></div>
+            <div class="block-param-row"><span>Trade Type: Digits</span><span>Matches / Differs</span></div>
+            <div class="block-param-row"><span>Initial Stake ($):</span><span>$10.00</span></div>
+          </div>
+        `;
+      } else if (category === 'purchase') {
+        canvas.innerHTML = `
+          <div class="block-node" style="background: #20639b; border-left-color: #103155;">
+            <div class="block-title"><span>2. Purchase Condition</span><span>🛒</span></div>
+            <div class="block-param-row"><span>Condition: If last tick digit equals</span><span>Digit [ 5 ]</span></div>
+            <div class="block-param-row"><span>Action: Purchase Contract</span><span>DIGITMATCH</span></div>
+          </div>
+        `;
+      } else if (category === 'restart') {
+        canvas.innerHTML = `
+          <div class="block-node" style="background: #3f334d; border-left-color: #221a2b;">
+            <div class="block-title"><span>3. Restart Purchase Conditions</span><span>🔄</span></div>
+            <div class="block-param-row"><span>On contract completion:</span><span>Repeat if loss (Martingale)</span></div>
+            <div class="block-param-row"><span>Multiplier factor:</span><span>2.0x</span></div>
+          </div>
+        `;
+      } else if (category === 'logic') {
+        canvas.innerHTML = `
+          <div class="block-node logic">
+            <div class="block-title"><span>Logic Control Block</span><span>🔀</span></div>
+            <div class="block-param-row"><span>If [ Total Profit ] &lt; [ Stop Loss Threshold ($50) ]</span><span>Then Stop Bot</span></div>
+          </div>
+        `;
+      } else if (category === 'math') {
+        canvas.innerHTML = `
+          <div class="block-node math">
+            <div class="block-title"><span>Math Calculation Block</span><span>🔢</span></div>
+            <div class="block-param-row"><span>Operation: Multiply Current Stake by</span><span>[ 2 ]</span></div>
+          </div>
+        `;
+      } else if (category === 'variables') {
+        canvas.innerHTML = `
+          <div class="block-node" style="background: #b5838d; border-left-color: #6d4c54;">
+            <div class="block-title"><span>Variables & Risk Control</span><span>📦</span></div>
+            <div class="block-param-row"><span>Set variable [ stop_loss_threshold ] to</span><span>$50.00</span></div>
+            <div class="block-param-row"><span>Set variable [ max_stake ] to</span><span>$100.00</span></div>
+          </div>
+        `;
+      } else {
+        canvas.innerHTML = `
+          <div class="block-node" style="background: #e59866; border-left-color: #935116;">
+            <div class="block-title"><span>Analysis & Statistics</span><span>📈</span></div>
+            <div class="block-param-row"><span>Get Statistic: Total Profit / Loss</span><span>Live Stream</span></div>
+            <div class="block-param-row"><span>Get Statistic: Number of Win/Loss Runs</span><span>Count</span></div>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize default trade category block view on load
     document.addEventListener('DOMContentLoaded', () => {
       renderBotList();
+      switchBuilderCategory('trade', document.querySelector('.toolbox-category-item'));
     });
 
     // Splash Loading animation
@@ -453,30 +579,18 @@
         document.getElementById('tabRecent').classList.add('active');
         footerBar.style.display = 'flex';
         
-        if (userBots.length === 0) {
-          bodyContent.innerHTML = `
-            <div style="padding: 40px; width: 100%; text-align: center; color: #6b7280;">
-              No recent bots available. Upload a bot or XML file to see previews here.
-            </div>
-          `;
-          footerBar.style.display = 'none';
-          return;
-        }
-
         bodyContent.innerHTML = `
           <div class="recent-sidebar">
             <div class="recent-item active">
               <div class="recent-item-info">
-                <span class="recent-item-title">${userBots[userBots.length - 1].name}</span>
-                <span class="recent-item-date">${userBots[userBots.length - 1].date}</span>
+                <span class="recent-item-title">Smart_Volatility_Bot_v1.xml</span>
+                <span class="recent-item-date">18 Aug 2026</span>
               </div>
-              <div class="recent-item-badge">
-                📄 ${userBots[userBots.length - 1].status}
-              </div>
+              <div class="recent-item-badge">📄 Saved</div>
             </div>
           </div>
           <div class="recent-preview-area">
-            <div class="preview-header-label">Preview</div>
+            <div class="preview-header-label">Preview Workspace XML</div>
             <div class="preview-canvas-container">
               <div class="blockly-preview-mockup">
                 <div class="block-card">
@@ -484,14 +598,9 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>
                     1. Trade parameters
                   </div>
-                  <div class="block-field"><span>Market: Derived > Continuous Indices > Volatility 10 Index</span><span>▼</span></div>
-                  <div class="block-field" style="margin-top:4px;"><span>Trade Type: Up/Down > Rise/Fall</span><span>▼</span></div>
-                  <div class="block-field" style="margin-top:4px;"><span>Contract Type: Both</span><span>▼</span></div>
+                  <div class="block-field"><span>Market: Derived > Continuous Indices > Volatility 100 Index</span><span>▼</span></div>
+                  <div class="block-field" style="margin-top:4px;"><span>Trade Type: Digits > Matches/Differs</span><span>▼</span></div>
                 </div>
-              </div>
-              <div class="preview-zoom-controls">
-                <button class="zoom-btn" onclick="alert('Zoom in')">+</button>
-                <button class="zoom-btn" onclick="alert('Zoom out')">-</button>
               </div>
             </div>
           </div>
@@ -501,14 +610,10 @@
         footerBar.style.display = 'none';
         bodyContent.innerHTML = `
           <div style="padding: 30px; width: 100%; box-sizing: border-box; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 6px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; width: 100%; margin-bottom: 20px; text-align: left;">
-              <span style="color: #d97706;">⚠️</span>
-              <span style="font-size: 13px; color: #b45309;">Importing XML files from Binary Bot and other third-party platforms may take longer.</span>
-            </div>
             <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 40px 20px; width: 100%; box-sizing: border-box; background: #fafafa;">
               <div style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Drag your XML file here</div>
               <div style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">or, if you prefer...</div>
-              <button class="btn-primary-blue" onclick="handleNewBotUpload('Uploaded_Bot_File.xml')">Select an XML file from your device</button>
+              <button class="btn-primary-blue" onclick="handleNewBotUpload('Imported_Strategy.xml')">Select an XML file from your device</button>
             </div>
           </div>
         `;
@@ -517,12 +622,8 @@
         footerBar.style.display = 'none';
         bodyContent.innerHTML = `
           <div style="padding: 40px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px;">Google Drive</div>
-            <div style="font-size: 13px; color: #4b5563; line-height: 1.5; max-width: 440px; margin-bottom: 24px;">
-              To import your bot from your Google Drive, you'll need to sign in to your Google account.<br>
-              To know how Google Drive handles your data, please review Deriv's Privacy policy.
-            </div>
-            <button class="btn-primary-blue" onclick="handleNewBotUpload('Google_Drive_Bot.xml')">Sign in & Import</button>
+            <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 12px;">Google Drive Integration</div>
+            <button class="btn-primary-blue" onclick="handleNewBotUpload('Google_Drive_Strategy.xml')">Sign in & Import</button>
           </div>
         `;
       }
@@ -538,20 +639,22 @@
     // Manual Trading Digits Generator (0-9)
     let selectedDigit = 5;
     const grid = document.getElementById('digitsContainer');
-    for (let i = 0; i <= 9; i++) {
-      const box = document.createElement('div');
-      box.className = `digit-box ${i === selectedDigit ? 'selected' : ''}`;
-      box.id = `manual-digit-${i}`;
-      box.innerHTML = `<span style="font-size:18px; font-weight:bold;">${i}</span><span style="font-size:10px; color:#848e9c;">0%</span>`;
-      box.onclick = () => {
-        document.querySelectorAll('.digit-box').forEach(b => b.classList.remove('selected'));
-        box.classList.add('selected');
-        selectedDigit = i;
-      };
-      grid.appendChild(box);
+    if(grid) {
+      for (let i = 0; i <= 9; i++) {
+        const box = document.createElement('div');
+        box.className = `digit-box ${i === selectedDigit ? 'selected' : ''}`;
+        box.id = `manual-digit-${i}`;
+        box.innerHTML = `<span style="font-size:18px; font-weight:bold;">${i}</span><span style="font-size:10px; color:#848e9c;">0%</span>`;
+        box.onclick = () => {
+          document.querySelectorAll('.digit-box').forEach(b => b.classList.remove('selected'));
+          box.classList.add('selected');
+          selectedDigit = i;
+        };
+        grid.appendChild(box);
+      }
     }
 
-    // Connect to Deriv WebSocket API for Manual Trading Ticks
+    // Connect to Deriv WebSocket API for Live Ticks
     const ws = new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=1089');
     ws.onopen = () => { ws.send(JSON.stringify({ ticks: "R_100", subscribe: 1 })); };
     ws.onmessage = (event) => {
@@ -560,7 +663,8 @@
         const quote = data.tick.quote;
         const pip = data.tick.pip_size || 2;
         const formatted = quote.toFixed(pip);
-        document.getElementById('liveTickDisplay').innerText = formatted;
+        const tickDisplay = document.getElementById('liveTickDisplay');
+        if(tickDisplay) tickDisplay.innerText = formatted;
         
         const lastChar = formatted.charAt(formatted.length - 1);
         for(let i=0; i<=9; i++) {
