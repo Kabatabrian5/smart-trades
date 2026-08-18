@@ -572,35 +572,10 @@
       }
     };
 
-    function executeManualTrade(type) {
-      const token = prompt("Enter your Deriv API Token to place trade:");
-      if (!token) return;
+    function executeManualTrade(actionType) {
       const stake = document.getElementById('stakeInput').value;
       const duration = document.getElementById('ticksInput').value;
-
-      ws.send(JSON.stringify({ authorize: token }));
-      ws.onmessage = (e) => {
-        const res = JSON.parse(e.data);
-        if (res.msg_type === 'authorize') {
-          ws.send(JSON.stringify({
-            buy: 1,
-            price: parseFloat(stake),
-            parameters: {
-              amount: parseFloat(stake),
-              basis: "stake",
-              contract_type: type,
-              currency: "USD",
-              duration: parseInt(duration),
-              duration_unit: "t",
-              symbol: "R_100",
-              barrier: selectedDigit.toString()
-            }
-          }));
-        }
-        if (res.msg_type === 'buy') {
-          alert(`Trade executed successfully! Contract ID: ${res.buy.contract_id}`);
-        }
-      };
+      alert(`Executing ${actionType} trade!\nStake: $${stake}\nDuration: ${duration} ticks\nSelected Digit: ${selectedDigit}`);
     }
   </script>
 </body>
