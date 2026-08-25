@@ -20,9 +20,19 @@ interface BotItem {
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY as string | undefined;
+const DERIV_APP_ID = import.meta.env.VITE_DERIV_APP_ID || '34bIcDF1RsEKSAbKFKimH';
+
+function derivLoginUrl() {
+  const redirectUri = `${window.location.origin}${window.location.pathname}`;
+  return `https://oauth.deriv.com/oauth2/authorize?app_id=${encodeURIComponent(DERIV_APP_ID)}&scope=read,trade,payment&redirect_uri=${encodeURIComponent(redirectUri)}`;
+}
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'manual-trading' | 'dashboard' | 'bot-builder'>('dashboard');
+  const [isCashierOpen, setIsCashierOpen] = useState(false);
+  const [cashierTab, setCashierTab] = useState<'deposit' | 'withdraw' | 'history'>('deposit');
+  const [cashierAmount, setCashierAmount] = useState('');
+  const [cashierPhone, setCashierPhone] = useState('');
 
   // Trading state
   const [selectedSymbol, setSelectedSymbol] = useState('1HZ100V');
@@ -213,6 +223,11 @@ export default function App() {
     const view = new google.picker.View(google.picker.ViewId.DOCS);
     view.setMimeTypes('application/json,text/xml');
 
+    if (!GOOGLE_CLIENT_ID) {
+      alert('Google Drive is not configured yet.');
+      return;
+    }
+
     const picker = new google.picker.PickerBuilder()
       .enableFeature(google.picker.Feature.NAV_HIDDEN)
       .setAppId(GOOGLE_CLIENT_ID.split('-')[0])
@@ -275,17 +290,17 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#16161c] text-white font-sans relative">
-      <header className="h-14 bg-[#121217] border-b border-[#22222c] flex items-center justify-between px-6 shrink-0 z-20">
+      <header className="h-auto min-h-14 bg-[#121217] border-b border-[#22222c] flex items-center justify-between px-3 py-2 sm:px-6 sm:py-0 shrink-0 z-20 gap-2">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
             <span className="w-7 h-7 rounded-lg bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center font-extrabold text-black text-xs">ST</span>
             <span className="font-extrabold text-sm tracking-wide text-white">Smartest <span className="text-teal-400">Trades</span></span>
           </div>
 
-          <nav className="flex items-center space-x-2">
+          <nav className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto max-w-[58vw] sm:max-w-none">
             <button
               onClick={() => setCurrentTab('manual-trading')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'manual-trading' ? 'bg-[#222230] text-teal-400 shadow' : 'text-gray-400 hover:text-white hover:bg-[#1a1a24]'
               }`}
             >
@@ -293,7 +308,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setCurrentTab('dashboard')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'dashboard' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-[#1a1a24]'
               }`}
             >
@@ -301,7 +316,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setCurrentTab('bot-builder')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'bot-builder' ? 'bg-[#222230] text-teal-400 shadow' : 'text-gray-400 hover:text-white hover:bg-[#1a1a24]'
               }`}
             >
@@ -309,14 +324,15 @@ export default function App() {
             </button>
           </nav>
         </div>
+        <button onClick={() => setIsCashierOpen(true)} className="shrink-0 px-2.5 sm:px-4 py-2 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Cashier</button>
       </header>
 
       {/* Manual Trading View */}
       {currentTab === 'manual-trading' && (
         <div className="flex flex-1 overflow-hidden">
           <PositionsDrawer />
-          <main className="flex-1 flex flex-col bg-[#16161c] overflow-y-auto p-6 space-y-4">
-            <div className="flex items-center justify-between bg-[#1b1b24] px-5 py-3 rounded-2xl border border-[#262633] shadow-md shrink-0">
+          <main className="flex-1 flex flex-col bg-[#16161c] overflow-y-auto p-2 sm:p-6 space-y-2 sm:space-y-4">
+            <div className="flex items-center justify-between bg-[#1b1b24] px-3 sm:px-5 py-2.5 sm:py-3 rounded-2xl border border-[#262633] shadow-md shrink-0">
               <div className="flex items-center space-x-3">
                 <span className={`w-3 h-3 rounded-full ${marketStatus.includes('Live') ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
                 <div>
@@ -342,8 +358,8 @@ export default function App() {
               <div className="text-xs text-gray-400">Status: <span className="text-white font-semibold">{marketStatus}</span></div>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center bg-[#1b1b24]/40 border border-[#262633] rounded-2xl p-8 relative shadow-inner">
-              <div className="grid grid-cols-5 gap-6 max-w-2xl">
+            <div className="flex-none min-h-[320px] sm:flex-1 flex flex-col items-center justify-center bg-[#1b1b24]/40 border border-[#262633] rounded-2xl p-3 sm:p-8 relative shadow-inner">
+              <div className="grid grid-cols-5 gap-2 sm:gap-6 max-w-2xl">
                 {digitStats.map((item) => {
                   const isSelected = selectedDigit === item.digit;
                   const isCurrent = lastDigit === item.digit;
@@ -358,7 +374,7 @@ export default function App() {
                     <button
                       key={item.digit}
                       onClick={() => setSelectedDigit(item.digit)}
-                      className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      className={`relative w-14 h-14 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer ${
                         isSelected ? 'bg-[#222230] shadow-lg shadow-teal-500/20' : 'bg-[#1b1b24] hover:border-gray-500'
                       }`}
                     >
@@ -384,8 +400,8 @@ export default function App() {
             </div>
           </main>
 
-          <aside className="w-80 bg-[#121217] border-l border-[#22222c] flex flex-col h-full text-white p-5 justify-between shrink-0">
-            <div className="space-y-4">
+          <aside className="w-full sm:w-80 bg-[#121217] border-t sm:border-t-0 sm:border-l border-[#22222c] flex flex-col h-auto sm:h-full text-white p-3 sm:p-5 justify-between shrink-0 gap-3 sm:gap-0">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between text-xs font-bold uppercase text-gray-400 border-b border-[#22222c] pb-2">
                 <span>Matches / Differs</span>
                 <span className="text-teal-400 font-mono">Barrier: {selectedDigit}</span>
@@ -958,6 +974,18 @@ export default function App() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+      {isCashierOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setIsCashierOpen(false)}>
+          <section className="w-full max-w-md overflow-hidden rounded-2xl border border-[#30303d] bg-[#0f131b] text-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="cashier-title" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-start justify-between border-b border-[#30303d] px-4 py-3"><div><h2 id="cashier-title" className="text-base font-extrabold">Cashier</h2><p className="mt-0.5 text-[10px] text-gray-500">DeriPay · Deriv payment agent</p></div><div className="flex items-center gap-3"><span className="text-gray-500">↻</span><button onClick={() => setIsCashierOpen(false)} className="text-xl text-gray-400 hover:text-white" aria-label="Close cashier">&times;</button></div></div>
+            <div className="m-3 rounded-xl border border-[#d9dce3] bg-[#141a24] p-3"><div className="flex justify-between text-[10px] uppercase tracking-wider text-gray-500"><span>Balance</span><span>USD</span></div><div className="mt-1 flex items-end justify-between"><strong className="text-xl text-emerald-400">$0.00</strong><span className="text-[10px] text-gray-500">KES 0</span></div></div>
+            <div className="mx-3 grid grid-cols-3 rounded-xl border border-[#d9dce3] p-1 text-xs font-bold"><button onClick={() => setCashierTab('deposit')} className={`rounded-lg px-2 py-2 ${cashierTab === 'deposit' ? 'bg-emerald-500 text-[#06130f]' : 'text-gray-400'}`}>↓ Deposit</button><button onClick={() => setCashierTab('withdraw')} className={`rounded-lg px-2 py-2 ${cashierTab === 'withdraw' ? 'bg-emerald-500 text-[#06130f]' : 'text-gray-400'}`}>↑ Withdraw</button><button onClick={() => setCashierTab('history')} className={`rounded-lg px-2 py-2 ${cashierTab === 'history' ? 'bg-emerald-500 text-[#06130f]' : 'text-gray-400'}`}>◷ History</button></div>
+            <div className="m-3 rounded-xl border border-[#d9dce3] p-3">
+              {cashierTab === 'history' ? <div className="py-8 text-center text-xs text-gray-500">No cashier transactions yet.</div> : <><h3 className="text-xs font-bold">{cashierTab === 'deposit' ? 'Pay with M-Pesa' : 'Withdraw through DeriPay'}</h3><label className="mt-4 block text-[10px] text-gray-500">Phone</label><input value={cashierPhone} onChange={(event) => setCashierPhone(event.target.value)} placeholder="07XX XXX XXX" className="mt-1 w-full rounded-lg border border-[#273142] bg-[#080d16] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400" /><label className="mt-3 block text-[10px] text-gray-500">Amount USD · minimum $5</label><input value={cashierAmount} onChange={(event) => setCashierAmount(event.target.value)} type="number" min="5" placeholder="5" className="mt-1 w-full rounded-lg border border-[#273142] bg-[#080d16] px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400" /><div className="mt-2 grid grid-cols-5 gap-1.5">{[5,10,20,50,100].map((amount) => <button key={amount} onClick={() => setCashierAmount(String(amount))} className="rounded-md border border-[#273142] py-2 text-[10px] text-gray-400 hover:border-emerald-400 hover:text-white">${amount}</button>)}</div><button onClick={() => window.location.assign(derivLoginUrl())} className="mt-3 w-full rounded-lg bg-emerald-500 py-3 text-xs font-extrabold text-[#06130f] hover:bg-emerald-400">{cashierTab === 'deposit' ? 'Pay with M-Pesa' : 'Continue with Deriv'}</button><p className="mt-3 text-center text-[10px] text-gray-500">Sign in with Deriv to confirm this secure payment-agent request.</p></>}
+            </div><div className="border-t border-[#30303d] px-4 py-3 text-center text-[10px] text-gray-500">Powered by <span className="font-bold text-emerald-400">DeriPay</span></div>
+          </section>
         </div>
       )}
     </div>
