@@ -64,7 +64,7 @@ export default function App() {
   const [isCashierOpen, setIsCashierOpen] = useState(false);
 
   // Trading state
-  const [selectedSymbol, setSelectedSymbol] = useState('1HZ100V');
+  const [selectedSymbol, setSelectedSymbol] = useState('R_100');
   const [liveMarkets, setLiveMarkets] = useState(VOLATILITY_MARKETS);
   const [selectedDigit, setSelectedDigit] = useState<number>(3);
   const [predictionMode, setPredictionMode] = useState<'MATCHES' | 'DIFFERS'>('MATCHES');
