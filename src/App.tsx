@@ -28,7 +28,7 @@ function derivLoginUrl() {
 }
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'manual-trading' | 'dashboard' | 'bot-builder'>('dashboard');
+  const [currentTab, setCurrentTab] = useState<'manual-trading' | 'dashboard' | 'bot-builder'>('manual-trading');
   const [isCashierOpen, setIsCashierOpen] = useState(false);
   const [cashierTab, setCashierTab] = useState<'deposit' | 'withdraw' | 'history'>('deposit');
   const [cashierAmount, setCashierAmount] = useState('');
@@ -324,13 +324,19 @@ export default function App() {
             </button>
           </nav>
         </div>
-        <button onClick={() => setIsCashierOpen(true)} className="shrink-0 px-2.5 sm:px-4 py-2 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Cashier</button>
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <button onClick={() => setIsCashierOpen(true)} className="px-2.5 sm:px-4 py-2 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Cashier</button>
+          <button onClick={() => window.location.assign(derivLoginUrl())} className="px-2 sm:px-3.5 py-2 bg-[#1b1b24] border border-[#2e2e3d] text-gray-200 hover:bg-[#252533] rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer">Sign in</button>
+          <button onClick={() => window.location.assign(derivLoginUrl())} className="px-2 sm:px-3.5 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl text-[10px] sm:text-xs font-bold shadow-lg shadow-red-600/20 cursor-pointer">Sign up</button>
+        </div>
       </header>
 
       {/* Manual Trading View */}
       {currentTab === 'manual-trading' && (
         <div className="flex flex-1 overflow-hidden">
-          <PositionsDrawer />
+          <div className="hidden sm:flex h-full shrink-0">
+            <PositionsDrawer />
+          </div>
           <main className="flex-1 flex flex-col bg-[#16161c] overflow-y-auto p-2 sm:p-6 space-y-2 sm:space-y-4">
             <div className="flex items-center justify-between bg-[#1b1b24] px-3 sm:px-5 py-2.5 sm:py-3 rounded-2xl border border-[#262633] shadow-md shrink-0">
               <div className="flex items-center space-x-3">
