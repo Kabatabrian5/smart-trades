@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PositionsDrawer from './components/layout/PositionsDrawer';
 import { useDerivSocket } from './hooks/useDerivSocket';
 import { derivService } from './services/derivSocket';
@@ -9,6 +9,38 @@ const VOLATILITY_MARKETS = [
   { id: '1HZ50V', name: 'Volatility 50 (1s) Index' },
   { id: '1HZ75V', name: 'Volatility 75 (1s) Index' },
   { id: '1HZ100V', name: 'Volatility 100 (1s) Index' },
+  { id: 'R_10', name: 'Volatility 10 Index' },
+  { id: 'R_25', name: 'Volatility 25 Index' },
+  { id: 'R_50', name: 'Volatility 50 Index' },
+  { id: 'R_75', name: 'Volatility 75 Index' },
+  { id: 'R_100', name: 'Volatility 100 Index' },
+  { id: 'BOOM300N', name: 'Boom 300 Index' },
+  { id: 'BOOM500', name: 'Boom 500 Index' },
+  { id: 'BOOM600', name: 'Boom 600 Index' },
+  { id: 'BOOM900', name: 'Boom 900 Index' },
+  { id: 'BOOM1000', name: 'Boom 1000 Index' },
+  { id: 'CRASH300N', name: 'Crash 300 Index' },
+  { id: 'CRASH500', name: 'Crash 500 Index' },
+  { id: 'CRASH600', name: 'Crash 600 Index' },
+  { id: 'CRASH900', name: 'Crash 900 Index' },
+  { id: 'CRASH1000', name: 'Crash 1000 Index' },
+  { id: 'JD10', name: 'Jump 10 Index' },
+  { id: 'JD25', name: 'Jump 25 Index' },
+  { id: 'JD50', name: 'Jump 50 Index' },
+  { id: 'JD75', name: 'Jump 75 Index' },
+  { id: 'JD100', name: 'Jump 100 Index' },
+  { id: 'stpRNG', name: 'Step Index' },
+  { id: 'stpRNG2', name: 'Step Index 2' },
+  { id: 'stpRNG3', name: 'Step Index 3' },
+  { id: 'stpRNG4', name: 'Step Index 4' },
+  { id: 'stpRNG5', name: 'Step Index 5' },
+  { id: 'RDBEAR', name: 'Daily Reset Bear Index' },
+  { id: 'RDBULL', name: 'Daily Reset Bull Index' },
+  { id: 'RB10', name: 'Range Break 10 Index' },
+  { id: 'RB20', name: 'Range Break 20 Index' },
+  { id: 'RB30', name: 'Range Break 30 Index' },
+  { id: 'RB40', name: 'Range Break 40 Index' },
+  { id: 'RB50', name: 'Range Break 50 Index' },
 ];
 
 interface BotItem {
@@ -20,17 +52,38 @@ interface BotItem {
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY as string | undefined;
+const DERIV_APP_ID = import.meta.env.VITE_DERIV_APP_ID || '34bIcDF1RsEKSAbKFKimH';
+
+function derivLoginUrl() {
+  const redirectUri = `${window.location.origin}${window.location.pathname}`;
+  return `https://oauth.deriv.com/oauth2/authorize?app_id=${encodeURIComponent(DERIV_APP_ID)}&scope=read,trade,payment&redirect_uri=${encodeURIComponent(redirectUri)}`;
+}
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'manual-trading' | 'dashboard' | 'bot-builder'>('dashboard');
+  const [isCashierOpen, setIsCashierOpen] = useState(false);
 
   // Trading state
   const [selectedSymbol, setSelectedSymbol] = useState('1HZ100V');
+  const [liveMarkets, setLiveMarkets] = useState(VOLATILITY_MARKETS);
   const [selectedDigit, setSelectedDigit] = useState<number>(3);
   const [predictionMode, setPredictionMode] = useState<'MATCHES' | 'DIFFERS'>('MATCHES');
   const [stake, setStake] = useState(10);
   const [ticksCount] = useState(1);
   const { currentTick, marketStatus, digitHistory } = useDerivSocket(selectedSymbol);
+
+  useEffect(() => {
+    derivService.send({ active_symbols: 'brief', product_type: 'basic' }).then((response) => {
+      if (!response?.active_symbols?.length) return;
+      const available = VOLATILITY_MARKETS.filter((market) => response.active_symbols.some((item: { symbol?: string }) => item.symbol === market.id));
+      if (available.length) {
+        setLiveMarkets(available);
+        if (!available.some((market) => market.id === selectedSymbol)) setSelectedSymbol(available[0].id);
+      }
+    }).catch(() => {
+      // Keep the known catalog when the public symbol request is unavailable.
+    });
+  }, [selectedSymbol]);
 
   // Dashboard & Bot Manager state
   const [dashboardBots, setDashboardBots] = useState<BotItem[]>([
@@ -213,6 +266,11 @@ export default function App() {
     const view = new google.picker.View(google.picker.ViewId.DOCS);
     view.setMimeTypes('application/json,text/xml');
 
+    if (!GOOGLE_CLIENT_ID) {
+      alert('Google Drive is not configured yet.');
+      return;
+    }
+
     const picker = new google.picker.PickerBuilder()
       .enableFeature(google.picker.Feature.NAV_HIDDEN)
       .setAppId(GOOGLE_CLIENT_ID.split('-')[0])
@@ -275,17 +333,17 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#16161c] text-white font-sans relative">
-      <header className="h-14 bg-[#121217] border-b border-[#22222c] flex items-center justify-between px-6 shrink-0 z-20">
+      <header className="h-auto min-h-14 bg-[#121217] border-b border-[#22222c] flex items-center justify-between px-3 py-2 sm:px-6 sm:py-0 shrink-0 z-20 gap-2">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
             <span className="w-7 h-7 rounded-lg bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center font-extrabold text-black text-xs">ST</span>
             <span className="font-extrabold text-sm tracking-wide text-white">Smartest <span className="text-teal-400">Trades</span></span>
           </div>
 
-          <nav className="flex items-center space-x-2">
+          <nav className="flex items-center space-x-1 sm:space-x-2 overflow-x-auto max-w-[58vw] sm:max-w-none">
             <button
               onClick={() => setCurrentTab('manual-trading')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'manual-trading' ? 'bg-[#222230] text-teal-400 shadow' : 'text-gray-400 hover:text-white hover:bg-[#1a1a24]'
               }`}
             >
@@ -293,7 +351,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setCurrentTab('dashboard')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'dashboard' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-[#1a1a24]'
               }`}
             >
@@ -301,7 +359,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setCurrentTab('bot-builder')}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'bot-builder' ? 'bg-[#222230] text-teal-400 shadow' : 'text-gray-400 hover:text-white hover:bg-[#1a1a24]'
               }`}
             >
@@ -309,14 +367,15 @@ export default function App() {
             </button>
           </nav>
         </div>
+        <button onClick={() => setIsCashierOpen(true)} className="shrink-0 px-2.5 sm:px-4 py-2 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Cashier</button>
       </header>
 
       {/* Manual Trading View */}
       {currentTab === 'manual-trading' && (
         <div className="flex flex-1 overflow-hidden">
           <PositionsDrawer />
-          <main className="flex-1 flex flex-col bg-[#16161c] overflow-y-auto p-6 space-y-4">
-            <div className="flex items-center justify-between bg-[#1b1b24] px-5 py-3 rounded-2xl border border-[#262633] shadow-md shrink-0">
+          <main className="flex-1 flex flex-col bg-[#16161c] overflow-y-auto p-2 sm:p-6 space-y-2 sm:space-y-4">
+            <div className="flex items-center justify-between bg-[#1b1b24] px-3 sm:px-5 py-2.5 sm:py-3 rounded-2xl border border-[#262633] shadow-md shrink-0">
               <div className="flex items-center space-x-3">
                 <span className={`w-3 h-3 rounded-full ${marketStatus.includes('Live') ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`}></span>
                 <div>
@@ -327,7 +386,7 @@ export default function App() {
                     }}
                     className="bg-transparent font-extrabold text-white text-sm outline-none cursor-pointer"
                   >
-                    {VOLATILITY_MARKETS.map((market) => (
+                    {liveMarkets.map((market) => (
                       <option key={market.id} value={market.id} className="bg-[#1b1b24] text-white">
                         {market.name}
                       </option>
@@ -342,8 +401,8 @@ export default function App() {
               <div className="text-xs text-gray-400">Status: <span className="text-white font-semibold">{marketStatus}</span></div>
             </div>
 
-            <div className="flex-1 flex flex-col items-center justify-center bg-[#1b1b24]/40 border border-[#262633] rounded-2xl p-8 relative shadow-inner">
-              <div className="grid grid-cols-5 gap-6 max-w-2xl">
+            <div className="flex-none min-h-[320px] sm:flex-1 flex flex-col items-center justify-center bg-[#1b1b24]/40 border border-[#262633] rounded-2xl p-3 sm:p-8 relative shadow-inner">
+              <div className="grid grid-cols-5 gap-2 sm:gap-6 max-w-2xl">
                 {digitStats.map((item) => {
                   const isSelected = selectedDigit === item.digit;
                   const isCurrent = lastDigit === item.digit;
@@ -358,7 +417,7 @@ export default function App() {
                     <button
                       key={item.digit}
                       onClick={() => setSelectedDigit(item.digit)}
-                      className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer ${
+                      className={`relative w-14 h-14 sm:w-20 sm:h-20 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer ${
                         isSelected ? 'bg-[#222230] shadow-lg shadow-teal-500/20' : 'bg-[#1b1b24] hover:border-gray-500'
                       }`}
                     >
@@ -384,8 +443,8 @@ export default function App() {
             </div>
           </main>
 
-          <aside className="w-80 bg-[#121217] border-l border-[#22222c] flex flex-col h-full text-white p-5 justify-between shrink-0">
-            <div className="space-y-4">
+          <aside className="w-full sm:w-80 bg-[#121217] border-t sm:border-t-0 sm:border-l border-[#22222c] flex flex-col h-auto sm:h-full text-white p-3 sm:p-5 justify-between shrink-0 gap-3 sm:gap-0">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between text-xs font-bold uppercase text-gray-400 border-b border-[#22222c] pb-2">
                 <span>Matches / Differs</span>
                 <span className="text-teal-400 font-mono">Barrier: {selectedDigit}</span>
@@ -958,6 +1017,16 @@ export default function App() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+      {isCashierOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" onClick={() => setIsCashierOpen(false)}>
+          <section className="w-full max-w-md rounded-2xl border border-[#30303d] bg-[#17171f] p-6 text-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="cashier-title" onClick={(event) => event.stopPropagation()}>
+            <div className="mb-5 flex items-start justify-between"><div><p className="text-[10px] font-bold tracking-[0.18em] text-emerald-400">SECURE ACCOUNT ACCESS</p><h2 id="cashier-title" className="mt-2 text-2xl font-extrabold">Cashier</h2></div><button onClick={() => setIsCashierOpen(false)} className="text-2xl text-gray-400 hover:text-white" aria-label="Close cashier">&times;</button></div>
+            <p className="text-sm leading-6 text-gray-400">Connect your Deriv account to access approved DeriPay payment-agent deposits, withdrawals, and account balance.</p>
+            <a href={derivLoginUrl()} className="mt-6 block w-full rounded-xl bg-emerald-500 px-4 py-3 text-center text-sm font-extrabold text-[#07120f] transition hover:bg-emerald-400">Continue with Deriv</a>
+            <p className="mt-4 text-center text-[11px] text-gray-500">Your Deriv password and OAuth token are handled by Deriv.</p>
+          </section>
         </div>
       )}
     </div>
