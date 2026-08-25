@@ -107,6 +107,17 @@ class DerivSocketService {
     }
   }
 
+  public async authorizeToken(token: string) {
+    this.connect();
+    return this.send({ authorize: token });
+  }
+
+  public async getBalance(token: string) {
+    await this.authorizeToken(token);
+    const response = await this.send({ balance: 1, subscribe: 0 });
+    return response.balance;
+  }
+
   public send(data: object): Promise<any> {
     if (data && (data as any).ticks) {
       this.currentActiveSymbol = (data as any).ticks;

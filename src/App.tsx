@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PositionsDrawer from './components/layout/PositionsDrawer';
 import { useDerivSocket } from './hooks/useDerivSocket';
 import { derivService } from './services/derivSocket';
@@ -33,6 +33,9 @@ export default function App() {
   const [cashierTab, setCashierTab] = useState<'deposit' | 'withdraw' | 'history'>('deposit');
   const [cashierAmount, setCashierAmount] = useState('');
   const [cashierPhone, setCashierPhone] = useState('');
+  const [authStatus, setAuthStatus] = useState('Not signed in');
+  const [realBalance, setRealBalance] = useState<number | null>(null);
+  const [demoBalance, setDemoBalance] = useState<number | null>(null);
 
   // Trading state
   const [selectedSymbol, setSelectedSymbol] = useState('1HZ100V');
@@ -41,6 +44,37 @@ export default function App() {
   const [stake, setStake] = useState(10);
   const [ticksCount] = useState(1);
   const { currentTick, marketStatus, digitHistory } = useDerivSocket(selectedSymbol);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const queryParams = new URLSearchParams(window.location.search);
+    const authToken = params.get('authToken') || queryParams.get('authToken');
+    const realToken = params.get('token1') || queryParams.get('token1');
+    const demoToken = params.get('token2') || queryParams.get('token2');
+    const realAccount = params.get('acct1') || queryParams.get('acct1');
+    const demoAccount = params.get('acct2') || queryParams.get('acct2');
+    const resolvedRealToken = realToken || authToken;
+
+    if (!resolvedRealToken && !demoToken) return;
+
+    let cancelled = false;
+    setAuthStatus('Loading balances...');
+    (async () => {
+      const real = resolvedRealToken ? await derivService.getBalance(resolvedRealToken) : null;
+      const demo = demoToken ? await derivService.getBalance(demoToken) : null;
+      return [real, demo] as const;
+    })().then(([real, demo]) => {
+      if (cancelled) return;
+      if (real) setRealBalance(Number(real.balance));
+      if (demo) setDemoBalance(Number(demo.balance));
+      setAuthStatus([realAccount, demoAccount].filter(Boolean).join(' / ') || 'Signed in with Deriv');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }).catch((error: unknown) => {
+      if (!cancelled) setAuthStatus(`Balance unavailable: ${error instanceof Error ? error.message : 'Deriv authorization failed'}`);
+    });
+
+    return () => { cancelled = true; };
+  }, []);
 
   // Dashboard & Bot Manager state
   const [dashboardBots, setDashboardBots] = useState<BotItem[]>([
@@ -325,6 +359,10 @@ export default function App() {
           </nav>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <div className="hidden lg:flex items-center gap-2 text-[10px] font-mono" title={authStatus}>
+            <span className="rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-2 py-1 text-emerald-300">Real: {realBalance === null ? '--' : `${realBalance.toFixed(2)} USD`}</span>
+            <span className="rounded-lg border border-sky-500/30 bg-sky-950/30 px-2 py-1 text-sky-300">Demo: {demoBalance === null ? '--' : `${demoBalance.toFixed(2)} USD`}</span>
+          </div>
           <button onClick={() => setIsCashierOpen(true)} className="px-2.5 sm:px-4 py-2 bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer">Cashier</button>
           <button onClick={() => window.location.assign(derivLoginUrl())} className="px-2 sm:px-3.5 py-2 bg-[#1b1b24] border border-[#2e2e3d] text-gray-200 hover:bg-[#252533] rounded-xl text-[10px] sm:text-xs font-bold transition-all cursor-pointer">Sign in</button>
           <button onClick={() => window.location.assign(derivLoginUrl())} className="px-2 sm:px-3.5 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl text-[10px] sm:text-xs font-bold shadow-lg shadow-red-600/20 cursor-pointer">Sign up</button>
